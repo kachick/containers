@@ -4,6 +4,8 @@
     "editorconfig.editorconfig",
     "streetsidesoftware.code-spell-checker",
     "dprint.dprint",
-    "jnoortheen.nix-ide"
+    "jnoortheen.nix-ide",
+    "exiasr.hadolint",
+    "ms-azuretools.vscode-docker"
   ]
 }
