@@ -1,7 +1,5 @@
 # Docker container image - Nix package manager on Ubuntu
 
-For my personal use
-
 ## Usage
 
 ```bash
