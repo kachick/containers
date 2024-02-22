@@ -6,7 +6,8 @@ FROM ubuntu:22.04
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Available versions in apt: https://packages.ubuntu.com/jammy/curl
-RUN apt-get update && apt-get install --no-install-recommends -y curl=7.81.0 \
+# --no-install-recommends is recommended by hadolint, but it omits ca-certificates
+RUN apt-get update && apt-get install --no-install-recommends -y curl=7.81.0-1ubuntu1.15 ca-certificates=20230311ubuntu0.22.04.1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
