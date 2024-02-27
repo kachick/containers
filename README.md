@@ -1,4 +1,4 @@
-# Docker container image - Nix package manager on Ubuntu
+# Containerfile - Nix package manager on Ubuntu
 
 ## Usage
 
@@ -10,9 +10,9 @@ podman run -it container-ubuntu-nix
 ```
 
 ```console
-root@b130fdb85b72:/# nix --version
-nix (Nix) 2.19.3
-root@b130fdb85b72:/# nix run nixpkgs#hello
+root@a1cdfec2dca5:/# nix --version
+nix (Nix) 2.20.3
+root@a1cdfec2dca5:/# nix run nixpkgs#hello
 Hello, world!
 ```
 
