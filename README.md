@@ -5,7 +5,7 @@
 ```bash
 git clone git@github.com:kachick/container-ubuntu-nix.git
 cd container-ubuntu-nix
-./build.bash
+podman build --tag container-ubuntu-nix --file Containerfile .
 podman run -it container-ubuntu-nix
 ```
 
