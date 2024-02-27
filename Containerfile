@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+USER user
+
 # If you faced any error from dprint: https://github.com/dprint/dprint-plugin-dockerfile/issues
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
