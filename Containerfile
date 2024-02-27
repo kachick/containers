@@ -12,7 +12,7 @@ ARG groupname
 RUN groupadd -g $container_user_gid $groupname && \
     useradd --no-log-init -m -u $container_user_uid -g $container_user_gid $username
 
-USER $user
+USER $username
 
 # If you faced any error from dprint: https://github.com/dprint/dprint-plugin-dockerfile/issues
 
