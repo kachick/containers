@@ -1,18 +1,18 @@
-# Docker container image - Nix package manager on Ubuntu
+# Containerfile - Nix package manager on Ubuntu
 
 ## Usage
 
 ```bash
-git clone git@github.com:kachick/dockerfile-ubuntu-nix.git
-cd dockerfile-ubuntu-nix
-docker build -t dockerfile-ubuntu-nix - < Dockerfile
-docker run -it dockerfile-ubuntu-nix
+git clone git@github.com:kachick/container-ubuntu-nix.git
+cd container-ubuntu-nix
+podman build --tag container-ubuntu-nix --file Containerfile .
+podman run -it container-ubuntu-nix
 ```
 
 ```console
-root@b130fdb85b72:/# nix --version
-nix (Nix) 2.19.3
-root@b130fdb85b72:/# nix run nixpkgs#hello
+root@a1cdfec2dca5:/# nix --version
+nix (Nix) 2.20.3
+root@a1cdfec2dca5:/# nix run nixpkgs#hello
 Hello, world!
 ```
 
