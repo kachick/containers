@@ -4,8 +4,6 @@ FROM ubuntu:22.04
 # Because of SHELL is not supported in OCI format
 # SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# If you faced any error from dprint: https://github.com/dprint/dprint-plugin-dockerfile/issues
-
 # Available versions in apt: https://packages.ubuntu.com/jammy/curl
 # --no-install-recommends is recommended by hadolint, but it omits ca-certificates
 RUN apt-get update && apt-get install --no-install-recommends -y curl=7.81.0-1ubuntu1.15 ca-certificates=20230311ubuntu0.22.04.1 \
