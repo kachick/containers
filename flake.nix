@@ -28,6 +28,7 @@
               nixpkgs-fmt
               go-task
               hadolint # Why prefer stable: https://github.com/NixOS/nixpkgs/pull/240387#issuecomment-1686601267
+              buildah
 
               unstable-pkgs.dprint
               unstable-pkgs.typos
