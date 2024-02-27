@@ -3,10 +3,10 @@
 ## Usage
 
 ```bash
-git clone git@github.com:kachick/dockerfile-ubuntu-nix.git
-cd dockerfile-ubuntu-nix
-docker build -t dockerfile-ubuntu-nix - < Dockerfile
-docker run -it dockerfile-ubuntu-nix
+git clone git@github.com:kachick/container-ubuntu-nix.git
+cd container-ubuntu-nix
+./build.bash
+podman run -it container-ubuntu-nix
 ```
 
 ```console
