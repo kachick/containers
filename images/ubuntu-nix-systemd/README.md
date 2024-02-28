@@ -1,11 +1,11 @@
-# Nix package manager on Ubuntu
+# Nix package manager on Ubuntu - systemd
 
 ## Usage
 
 ```bash
 git clone git@github.com:kachick/containers.git
 cd containers
-task try IMAGE=ubuntu-nix USER=user
+task try IMAGE=ubuntu-nix-systemd USER=user
 ```
 
 Make sure non root and non sudoers can run nix features

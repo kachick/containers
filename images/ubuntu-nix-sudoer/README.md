@@ -1,27 +1,26 @@
-# Nix package manager on Ubuntu
+# Nix package manager on Ubuntu - sudoer
 
 ## Usage
 
 ```bash
 git clone git@github.com:kachick/containers.git
 cd containers
-task try IMAGE=ubuntu-nix USER=user
+task try IMAGE=ubuntu-nix-sudoer USER=user
 ```
 
-Make sure non root and non sudoers can run nix features
-
 ```console
-user@541fad9ac911:/$ nix --version
+user@1fa1d02b83b7:/$ nix --version
 nix (Nix) 2.20.3
-user@541fad9ac911:/$ nix run nixpkgs#hello
+user@1fa1d02b83b7:/$ nix run nixpkgs#hello
 Hello, world!
-user@541fad9ac911:/$ ps -ef | grep systemd
-root           1       0  0 10:53 ?        00:00:00 /bin/systemd --system
-root          15       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-journald
-systemd+      22       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-resolved
-user         770      26  0 10:55 pts/0    00:00:00 grep --color=auto systemd
-user@541fad9ac911:/$ sudo
-bash: sudo: command not found
+user@1fa1d02b83b7:/$ ps -ef | grep systemd
+user          26       1  0 17:23 pts/0    00:00:00 grep --color=auto systemd
+user@1fa1d02b83b7:/$ sudo --version
+Sudo version 1.9.9
+Sudoers policy plugin version 1.9.9
+Sudoers file grammar version 48
+Sudoers I/O plugin version 1.9.9
+Sudoers audit plugin version 1.9.9
 ```
 
 ## Motivation
@@ -33,7 +32,4 @@ bash: sudo: command not found
 
 ## Note
 
-- Devcontainer
-  - https://github.com/kachick/wait-other-jobs/pull/517
-  - https://github.com/kachick/devcontainer-ubuntu-nix
-- [Installer](https://github.com/DeterminateSystems/nix-installer)
+- systemd pattern didn't work for running home-manager in non root user
