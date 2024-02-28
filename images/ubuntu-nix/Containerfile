@@ -14,5 +14,12 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/
   --no-confirm
 
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
-RUN nix run nixpkgs#hello
-CMD [ "/bin/systemd" ]
+
+ARG container_user_uid
+ARG container_user_gid
+ARG username
+ARG groupname
+RUN groupadd -g $container_user_gid $groupname && \
+    useradd --no-log-init -m -u $container_user_uid -g $container_user_gid $username
+
+ENTRYPOINT [ "/bin/systemd" ]
