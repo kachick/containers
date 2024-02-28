@@ -5,15 +5,23 @@
 ```bash
 git clone git@github.com:kachick/containers.git
 cd containers
-podman build --tag ubuntu-nix --file ./images/ubuntu-nix/Containerfile .
-podman run -it ubuntu-nix
+task try IMAGE=ubuntu-nix USER=user
 ```
 
+Make sure non root and non sudoers can run nix features
+
 ```console
-root@a1cdfec2dca5:/# nix --version
+user@541fad9ac911:/$ nix --version
 nix (Nix) 2.20.3
-root@a1cdfec2dca5:/# nix run nixpkgs#hello
+user@541fad9ac911:/$ nix run nixpkgs#hello
 Hello, world!
+user@541fad9ac911:/$ ps -ef | grep systemd
+root           1       0  0 10:53 ?        00:00:00 /bin/systemd --system
+root          15       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-journald
+systemd+      22       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-resolved
+user         770      26  0 10:55 pts/0    00:00:00 grep --color=auto systemd
+user@541fad9ac911:/$ sudo
+bash: sudo: command not found
 ```
 
 ## Motivation
