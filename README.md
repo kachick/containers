@@ -6,4 +6,4 @@ Usage is written in README.md in each images directory.
 
 ## Images
 
-- [images/ubuntu-nix](images/ubuntu-nix): `task try IMAGE=ubuntu-nix`
+- [ubuntu-nix](images/ubuntu-nix): `task try IMAGE=ubuntu-nix USER=user`

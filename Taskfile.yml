@@ -27,8 +27,10 @@ tasks:
       - trivy config .
   try:
     cmds:
-      - podman build --tag {{.IMAGE}} --file ./images/{{.IMAGE}}/Containerfile .
-      - podman run -it {{.IMAGE}}
+      - podman build --tag {{.IMAGE}} --build-arg username={{.USER}} --file ./images/{{.IMAGE}}/Containerfile .
+      - podman run --rm --name {{.IMAGE}} --detach {{.IMAGE}}
+      - podman exec --user {{.USER}} --interactive --tty {{.IMAGE}} bash
+      - podman stop {{.IMAGE}}
   deps:
     cmds:
       - nix --version
