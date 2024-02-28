@@ -1,14 +1,14 @@
 # Containerfile - Nix package manager on Ubuntu
 
-[![CI - Nix Status](https://github.com/kachick/containers-ubuntu-nix/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers-ubuntu-nix/actions/workflows/ci-nix.yml?query=branch%3Amain+)
+[![CI - Nix Status](https://github.com/kachick/containers/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci-nix.yml?query=branch%3Amain+)
 
 ## Usage
 
 ```bash
-git clone git@github.com:kachick/container-ubuntu-nix.git
-cd container-ubuntu-nix
-podman build --tag container-ubuntu-nix --file Containerfile .
-podman run -it container-ubuntu-nix
+git clone git@github.com:kachick/containers.git
+cd containers
+podman build --tag containers --file Containerfile .
+podman run -it containers
 ```
 
 ```console
