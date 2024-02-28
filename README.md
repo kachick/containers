@@ -6,4 +6,5 @@ Usage is written in README.md in each images directory.
 
 ## Images
 
-- [ubuntu-nix](images/ubuntu-nix): `task try IMAGE=ubuntu-nix USER=user`
+- [ubuntu-nix-sudoer](images/ubuntu-nix-sudoer): `task try IMAGE=ubuntu-nix-sudoer USER=user`
+- [ubuntu-nix-systemd](images/ubuntu-nix-systemd): `task try IMAGE=ubuntu-nix-systemd USER=user`

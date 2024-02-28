@@ -19,18 +19,17 @@ tasks:
     cmds:
       - dprint fmt
       - nixpkgs-fmt ./*.nix
+      - shfmt --write ./images/*/*.bash
   lint:
     cmds:
       - dprint check
       - typos . .github .vscode
       - nixpkgs-fmt --check ./*.nix
       - trivy config .
+      - shellcheck ./images/*/*.bash
   try:
     cmds:
-      - podman build --tag {{.IMAGE}} --build-arg username={{.USER}} --file ./images/{{.IMAGE}}/Containerfile .
-      - podman run --rm --name {{.IMAGE}} --detach {{.IMAGE}}
-      - podman exec --user {{.USER}} --interactive --tty {{.IMAGE}} bash
-      - podman stop {{.IMAGE}}
+      - ./images/{{.IMAGE}}/try.bash '{{.IMAGE}}' '{{.USER}}'
   deps:
     cmds:
       - nix --version
