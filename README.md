@@ -1,5 +1,7 @@
 # Containerfile - Nix package manager on Ubuntu
 
+[![CI - Nix Status](https://github.com/kachick/containers-ubuntu-nix/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers-ubuntu-nix/actions/workflows/ci-nix.yml?query=branch%3Amain+)
+
 ## Usage
 
 ```bash
