@@ -1,11 +1,7 @@
 FROM ubuntu:22.04
 
-# hadolint global ignore=DL4006
-# Because of SHELL is not supported in OCI format
-# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 # Available versions in apt: https://packages.ubuntu.com/jammy/curl
-# --no-install-recommends is recommended by hadolint, but it omits ca-certificates
+# --no-install-recommends omits ca-certificates
 RUN apt-get update && apt-get install --no-install-recommends -y curl=7.81.0-1ubuntu1.15 ca-certificates=20230311ubuntu0.22.04.1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*

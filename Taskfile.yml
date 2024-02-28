@@ -24,7 +24,7 @@ tasks:
       - dprint check
       - typos . .github .vscode
       - nixpkgs-fmt --check ./*.nix
-      - hadolint Containerfile
+      - trivy config .
   deps:
     cmds:
       - nix --version
@@ -32,3 +32,4 @@ tasks:
       - task --version
       - dprint --version
       - typos --version
+      - trivy --version
