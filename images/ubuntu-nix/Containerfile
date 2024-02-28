@@ -15,11 +15,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/
 
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
-ARG container_user_uid
-ARG container_user_gid
 ARG username
-ARG groupname
-RUN groupadd -g $container_user_gid $groupname && \
-    useradd --no-log-init -m -u $container_user_uid -g $container_user_gid $username
+RUN useradd --no-log-init --create-home $username
 
-ENTRYPOINT [ "/bin/systemd" ]
+CMD [ "/bin/systemd", "--system" ]
