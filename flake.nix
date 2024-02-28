@@ -32,6 +32,7 @@
 
               unstable-pkgs.dprint
               unstable-pkgs.typos
+              unstable-pkgs.trivy
             ];
           };
       }
