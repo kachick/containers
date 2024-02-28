@@ -1,0 +1,32 @@
+FROM ubuntu:22.04
+
+# Available versions in apt: https://packages.ubuntu.com/jammy/curl
+# --no-install-recommends omits ca-certificates
+# sudo is required in non systemd with Nix
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y curl=7.81.0-1ubuntu1.15 ca-certificates=20230311ubuntu0.22.04.1 \
+ sudo=1.9.9-1ubuntu2.4 \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+ARG username
+
+RUN useradd --no-log-init --create-home --groups sudo $username
+
+RUN echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+USER user
+
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
+  --extra-conf "sandbox = false" \
+  --init none \
+  --no-confirm
+
+ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
+
+# https://github.com/NixOS/nix/issues/3435#issuecomment-1642654775
+# This is... but other solutins can't avoid following error
+# error: could not set permissions on '/nix/var/nix/profiles/per-user' to 755: Operation not permitted
+RUN sudo chown --recursive $username /nix
+
+CMD [ "/bin/bash" ]

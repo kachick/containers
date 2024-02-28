@@ -27,6 +27,8 @@
               go-task
               dprint
               typos
+              shfmt
+              shellcheck
 
               buildah
               trivy
