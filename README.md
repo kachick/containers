@@ -1,33 +1,9 @@
-# Containerfile - Nix package manager on Ubuntu
+# Containerfie(s)
 
 [![CI - Nix Status](https://github.com/kachick/containers/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci-nix.yml?query=branch%3Amain+)
 
-## Usage
+Usage is written in README.md in each images directory.
 
-```bash
-git clone git@github.com:kachick/containers.git
-cd containers
-podman build --tag containers --file Containerfile .
-podman run -it containers
-```
+## Images
 
-```console
-root@a1cdfec2dca5:/# nix --version
-nix (Nix) 2.20.3
-root@a1cdfec2dca5:/# nix run nixpkgs#hello
-Hello, world!
-```
-
-## Motivation
-
-- [nixos/nix](https://hub.docker.com/r/nixos/nix) is not NixOS, but it does not have some basic tools as `groupadd`\
-  ref: <https://stackoverflow.com/questions/75653182/why-do-some-official-nix-docker-containers-not-have-the-nixos-rebuild-command>
-- I want flake by default
-- I prefer ubuntu rather than [alpine](https://hub.docker.com/r/nixos/nix) for daily use
-
-## Note
-
-- Devcontainer
-  - https://github.com/kachick/wait-other-jobs/pull/517
-  - https://github.com/kachick/devcontainer-ubuntu-nix
-- [Installer](https://github.com/DeterminateSystems/nix-installer)
+- [images/ubuntu-nix](images/ubuntu-nix): `task try IMAGE=ubuntu-nix`

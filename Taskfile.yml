@@ -25,6 +25,10 @@ tasks:
       - typos . .github .vscode
       - nixpkgs-fmt --check ./*.nix
       - trivy config .
+  try:
+    cmds:
+      - podman build --tag {{.IMAGE}} --file ./images/{{.IMAGE}}/Containerfile .
+      - podman run -it {{.IMAGE}}
   deps:
     cmds:
       - nix --version
