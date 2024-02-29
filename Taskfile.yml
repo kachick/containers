@@ -25,7 +25,7 @@ tasks:
       - dprint check
       - typos . .github .vscode
       - nixpkgs-fmt --check ./*.nix
-      - trivy config .
+      - trivy config --exit-code 1 .
       - shellcheck ./images/*/*.bash
   try:
     cmds:
