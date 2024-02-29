@@ -5,6 +5,7 @@ on:
     paths:
       - '**Containerfile'
       - '.containerignore'
+      - '.github/workflows/push-cr.yml'
   workflow_dispatch:
 
 jobs:
