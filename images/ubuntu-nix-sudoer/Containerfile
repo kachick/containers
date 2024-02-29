@@ -15,7 +15,10 @@ RUN useradd --no-log-init --create-home --groups sudo $username
 
 RUN echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-USER user
+USER $username
+# Podman/Docker doesn't set $USER in USER instruction, and it makes failure of home-manager activation
+# https://stackoverflow.com/questions/54411218/docker-why-isnt-user-environment-variable-set
+ENV USER=$username
 
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
   --extra-conf "sandbox = false" \
