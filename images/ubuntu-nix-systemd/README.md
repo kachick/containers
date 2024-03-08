@@ -2,10 +2,11 @@
 
 ## Usage
 
+Keep systemd in background and use it with another user
+
 ```bash
-git clone git@github.com:kachick/containers.git
-cd containers
-task try IMAGE=ubuntu-nix-systemd USER=user
+podman run --rm ghcr.io/kachick/ubuntu-nix-systemd:latest &
+podman exec --user=user -it "$(podman ps --sort=created --format {{.Names}} | tail -1)" bash
 ```
 
 Make sure non root and non sudoers can run nix features

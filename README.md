@@ -7,7 +7,7 @@ Usage is written in README.md in each images directory.
 
 ## Container Images
 
-| Name                                            | Build in loccal                               | Pull from container registry and login the shell                                                                                |
-| ----------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [ubuntu-nix-sudoer](images/ubuntu-nix-sudoer)   | `task try IMAGE=ubuntu-nix-sudoer USER=user`  | `podman run -it ghcr.io/kachick/ubuntu-nix-sudoer:latest`                                                                       |
-| [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try IMAGE=ubuntu-nix-systemd USER=user` | `podman run ghcr.io/kachick/ubuntu-nix-systemd:latest && podman exec -it --user=user ghcr.io/kachick/ubuntu-nix-systemd:latest` |
+| Name                                            | Build in loccal                               | Pull from container registry and runs                                                   |
+| ----------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [ubuntu-nix-sudoer](images/ubuntu-nix-sudoer)   | `task try IMAGE=ubuntu-nix-sudoer USER=user`  | `podman run --rm -it ghcr.io/kachick/ubuntu-nix-sudoer:latest`                          |
+| [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try IMAGE=ubuntu-nix-systemd USER=user` | `podman run --rm ghcr.io/kachick/ubuntu-nix-systemd:latest &"` # Why bg? See the README |

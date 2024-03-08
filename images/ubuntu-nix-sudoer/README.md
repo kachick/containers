@@ -3,9 +3,7 @@
 ## Usage
 
 ```bash
-git clone git@github.com:kachick/containers.git
-cd containers
-task try IMAGE=ubuntu-nix-sudoer USER=user
+podman run --rm -it ghcr.io/kachick/ubuntu-nix-sudoer:latest
 ```
 
 ```console
