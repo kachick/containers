@@ -34,8 +34,7 @@ jobs:
           tags: latest ${{ github.sha }} ${{ steps.get-meta.outputs.started_at }}
           containerfiles: |
             ./images/ubuntu-nix-sudoer/Containerfile
-          build-args: |
-            username=user
+            ./images/ubuntu-nix-systemd/Containerfile
           oci: true
       - name: Push To ghcr.io
         id: push-to-ghcr
