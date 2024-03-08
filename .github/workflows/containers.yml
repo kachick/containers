@@ -20,13 +20,17 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
+      - name: Get started timestamp
+        id: get-meta
+        run: |
+          echo "started_at=$(date --utc --iso-8601=seconds)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
         with:
           image: ubuntu-nix-sudoer
-          tags: latest ${{ github.sha }}
+          tags: latest ${{ github.sha }} ${{ steps.get-meta.outputs.started_at }}
           containerfiles: |
             ./images/ubuntu-nix-sudoer/Containerfile
           build-args: |
