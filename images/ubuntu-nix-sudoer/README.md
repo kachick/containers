@@ -3,7 +3,7 @@
 ## Usage
 
 ```bash
-podman run --rm -it ghcr.io/kachick/ubuntu-nix-sudoer:latest
+podman run --user=user --rm -it ghcr.io/kachick/ubuntu-nix-sudoer:latest
 ```
 
 ```console
