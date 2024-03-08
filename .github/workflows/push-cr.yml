@@ -10,9 +10,9 @@ on:
       - '.github/workflows/push-cr.yml'
   pull_request:
     paths:
+      - '**Containerfile'
+      - '.containerignore'
       - '.github/workflows/push-cr.yml'
-      - 'Containerfile'
-      - 'flake.nix'
   workflow_dispatch:
 
 jobs:
