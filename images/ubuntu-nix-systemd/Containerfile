@@ -1,5 +1,9 @@
 FROM ubuntu:22.04
 
+LABEL org.opencontainers.image.source=https://github.com/kachick/containers
+LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - systemd"
+LABEL org.opencontainers.image.licenses=MIT
+
 # Available versions in apt: https://packages.ubuntu.com/jammy/curl
 # --no-install-recommends omits ca-certificates
 RUN apt-get update \
