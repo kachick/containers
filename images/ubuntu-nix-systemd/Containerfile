@@ -15,7 +15,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/
   --no-start-daemon \
   --no-confirm
 
-ARG username
+ARG username="user"
 RUN useradd --no-log-init --create-home $username
 
 CMD [ "/bin/systemd", "--system" ]
