@@ -2,8 +2,8 @@
 
 set -euxo pipefail
 
-image=$1
-user=$2
+image_tag=ubuntu-nix-sudoer
+user="$1"
 
-podman build --tag "$image" --build-arg username="$user" --file ./images/"$image"/Containerfile .
-podman run --interactive --tty --rm --name "$image" "$image"
+podman build --tag "$image_tag" --build-arg username="$user" --file "./images/${image_tag}/Containerfile" .
+podman run --interactive --tty --rm "$image_tag"
