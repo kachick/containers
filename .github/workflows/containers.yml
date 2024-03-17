@@ -172,8 +172,8 @@ jobs:
           ⬢🦭 Staging container-image has been deployed 🚀\
           You can check in package URL
 
-          * systemd: https://github.com/${{ github.actor == github.repository }}/pkgs/container/ubuntu-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }}-systemd
-          * sudoer: https://github.com/${{ github.actor == github.repository }}/pkgs/container/ubuntu-nix-sudoer/${{ fromJson(needs.ubuntu-nix-sudoer.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }}-sudoer
+          * systemd: https://github.com/${{ github.repository }}/pkgs/container/ubuntu-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }}-systemd
+          * sudoer: https://github.com/${{ github.repository }}/pkgs/container/ubuntu-nix-sudoer/${{ fromJson(needs.ubuntu-nix-sudoer.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }}-sudoer
 
           This image will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
           EOF
