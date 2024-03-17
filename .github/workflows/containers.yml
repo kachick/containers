@@ -160,6 +160,8 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
+      - name: Prepare git to run gh commands
+        uses: actions/checkout@v4
       - name: Post comments
         if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') }}
         env:
