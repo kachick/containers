@@ -18,7 +18,7 @@ on:
 jobs:
   # podman can handle lowercase. So normalize the outputs
   get-meta:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       started_at: ${{ steps.timestamp.outputs.started_at }}
@@ -54,7 +54,7 @@ jobs:
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-sudoer:
     needs: [get-meta]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
@@ -106,7 +106,7 @@ jobs:
               jq | gh-action-escape -name=json | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-systemd:
     needs: [get-meta]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
@@ -157,7 +157,7 @@ jobs:
 
   announce-staging:
     needs: [get-meta, ubuntu-nix-systemd, ubuntu-nix-sudoer]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Prepare git to run gh commands
