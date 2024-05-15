@@ -59,6 +59,11 @@ jobs:
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
+      - name: Logging dependency versions
+        run: |
+          podman version
+          crun --version
+          buildah version
       - uses: actions/checkout@v4
       - name: Install gh-action-escape
         run: curl -fsSL https://raw.githubusercontent.com/kachick/gh-action-escape/main/scripts/install-in-github-action.sh | sh -s v0.2.0
@@ -111,6 +116,11 @@ jobs:
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
+      - name: Logging dependency versions
+        run: |
+          podman version
+          crun --version
+          buildah version
       - uses: actions/checkout@v4
       - name: Install gh-action-escape
         run: curl -fsSL https://raw.githubusercontent.com/kachick/gh-action-escape/main/scripts/install-in-github-action.sh | sh -s v0.2.0
