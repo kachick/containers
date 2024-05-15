@@ -78,12 +78,13 @@ jobs:
           build-args: |
             username=user
           oci: true
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Inspect the created image
-        run: 'podman inspect ${{ steps.build-image.outputs.image }}'
+        run: |
+          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
@@ -137,12 +138,13 @@ jobs:
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
           oci: true
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Inspect the created image
-        run: 'podman inspect ${{ steps.build-image.outputs.image }}'
+        run: |
+          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
