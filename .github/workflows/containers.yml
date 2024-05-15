@@ -78,6 +78,10 @@ jobs:
           build-args: |
             username=user
           oci: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
       - name: Inspect the created image
         run: 'podman inspect ${{ steps.build-image.outputs.image }}'
       - name: Push To ghcr.io
@@ -133,6 +137,10 @@ jobs:
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
           oci: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
       - name: Inspect the created image
         run: 'podman inspect ${{ steps.build-image.outputs.image }}'
       - name: Push To ghcr.io
