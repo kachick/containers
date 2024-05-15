@@ -18,7 +18,7 @@ on:
 jobs:
   # podman can handle lowercase. So normalize the outputs
   get-meta:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       started_at: ${{ steps.timestamp.outputs.started_at }}
@@ -54,7 +54,7 @@ jobs:
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-sudoer:
     needs: [get-meta]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
@@ -78,8 +78,13 @@ jobs:
           build-args: |
             username=user
           oci: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Inspect the created image
-        run: 'podman inspect ${{ steps.build-image.outputs.image }}'
+        run: |
+          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
@@ -111,7 +116,7 @@ jobs:
               jq | gh-action-escape -name=json | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-systemd:
     needs: [get-meta]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
@@ -133,8 +138,13 @@ jobs:
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
           oci: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: Inspect the created image
-        run: 'podman inspect ${{ steps.build-image.outputs.image }}'
+        run: |
+          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
@@ -167,7 +177,7 @@ jobs:
 
   announce-staging:
     needs: [get-meta, ubuntu-nix-systemd, ubuntu-nix-sudoer]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Prepare git to run gh commands
