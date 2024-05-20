@@ -10,8 +10,8 @@ updates:
       determinatesystems-actions:
         patterns:
           - 'DeterminateSystems*'
-  # TODO: Consider to enable this feature after realized CI
-  # - package-ecosystem: 'docker'
-  #   directory: '/'
-  #   schedule:
-  #     interval: 'monthly'
+# TODO: Consider to enable this feature after realized CI
+# - package-ecosystem: 'docker'
+#   directory: '/'
+#   schedule:
+#     interval: 'monthly'
