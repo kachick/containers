@@ -24,6 +24,7 @@ jobs:
           steps.dependabot.outputs.update-type != 'version-update:semver-major' ||
           contains(steps.dependabot.outputs.dependency-names, 'DeterminateSystems')
         run: echo -n 'merge=true' | tee -a "$GITHUB_OUTPUT"
+
   dependabot:
     needs: [judge-dependabot]
     if: ${{ needs.judge-dependabot.outputs.merge == 'true' }}
@@ -39,6 +40,22 @@ jobs:
         run: gh pr review --approve "$PR_URL" && gh pr merge --auto --delete-branch --squash "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  renovate:
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    if: ${{ github.actor == 'renovate[bot]' }}
+    steps:
+      - name: Wait other jobs
+        uses: kachick/wait-other-jobs@v3
+        with:
+          skip-same-workflow: 'true'
+        timeout-minutes: 10
+      - name: Approve and merge
+        run: gh pr review --approve "$PR_URL" && gh pr merge --auto --squash --delete-branch "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   selfup-runner:
