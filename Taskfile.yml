@@ -19,10 +19,12 @@ tasks:
     cmds:
       - dprint fmt
       - nixpkgs-fmt ./*.nix
+      - yamlfmt .
       - shfmt --write ./images/*/*.bash
   lint:
     cmds:
       - dprint check
+      - yamlfmt -lint .
       - typos . .github .vscode
       - nixpkgs-fmt --check ./*.nix
       - trivy config --exit-code 1 .
@@ -39,5 +41,6 @@ tasks:
       - nil --version
       - task --version
       - dprint --version
+      - yamlfmt -version
       - typos --version
       - trivy --version

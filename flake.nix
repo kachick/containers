@@ -26,6 +26,7 @@
               nixpkgs-fmt
               go-task
               dprint
+              yamlfmt
               typos
               shfmt
               shellcheck
