@@ -34,7 +34,6 @@
               nixfmt-rfc-style
               go-task
               dprint
-              yamlfmt
               typos
               shfmt
               shellcheck
