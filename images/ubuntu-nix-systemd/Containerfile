@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:noble-20240801
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - systemd"
@@ -7,8 +7,8 @@ LABEL org.opencontainers.image.licenses=MIT
 # Available versions in apt: https://packages.ubuntu.com/noble/curl
 # --no-install-recommends omits ca-certificates
 RUN apt-get update \
- && apt-get install --no-install-recommends -y curl=8.5.0-2ubuntu10.1	ca-certificates=20240203 \
- systemd=255.4-1ubuntu8 \
+ && apt-get install --no-install-recommends -y curl=8.5.0-2ubuntu10.4	ca-certificates=20240203 \
+ systemd=255.4-1ubuntu8.4 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
