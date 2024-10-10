@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:noble-20240801
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - systemd"
