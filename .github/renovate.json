@@ -5,8 +5,14 @@
     "github>kachick/renovate-config-dprint#1.3.0",
     "github>kachick/renovate-config-dprint:self"
   ],
-  "enabledManagers": ["regex", "dockerfile"],
-  "labels": ["dependencies", "renovate"],
+  "enabledManagers": [
+    "custom.regex",
+    "dockerfile"
+  ],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "nix": {
     "enabled": false
   },
