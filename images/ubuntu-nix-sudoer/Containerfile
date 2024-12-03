@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.licenses=MIT
 # --no-install-recommends omits ca-certificates
 # sudo is required in non systemd with Nix
 RUN apt-get update \
- && apt-get install --no-install-recommends -y curl=8.5.0-2ubuntu10.4	ca-certificates=20240203 \
+ && apt-get install --no-install-recommends -y curl=8.5.0-2ubuntu10.5 ca-certificates=20240203 \
  sudo=1.9.15p5-3ubuntu5 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
