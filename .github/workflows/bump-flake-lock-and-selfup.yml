@@ -12,7 +12,7 @@ on:
 
 jobs:
   bump:
-    uses: kachick/selfup/.github/workflows/reusable-bump-flake-lock-and-selfup.yml@19e2cb02d17162faaaa65a9c2d47726fb76add3b # v1.1.6
+    uses: kachick/selfup/.github/workflows/reusable-bump-flake-lock-and-selfup.yml@v1.1.9
     if: (github.event.sender.login == 'kachick') || (github.event_name != 'pull_request')
     with:
       app_id: ${{ vars.APP_ID }}
