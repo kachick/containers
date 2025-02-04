@@ -1,6 +1,5 @@
 FROM docker.io/ubuntu:24.04@sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782
 
-# This change triggers the push action
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - systemd"
