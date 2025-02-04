@@ -90,12 +90,6 @@ jobs:
           crun --version
           buildah version
       - uses: actions/checkout@v4
-      - name: Memorize container hash
-        id: cache-containerfile
-        uses: actions/cache@v4
-        with:
-          path: tmp/cache-in-github-action
-          key: ${{ hashFiles('**/ubuntu-nix-sudoer/Containerfile') }}
       - name: Install gh-action-escape
         run: curl -fsSL https://raw.githubusercontent.com/kachick/gh-action-escape/main/scripts/install-in-github-action.sh | sh -s v0.2.0
       - name: Build Image
