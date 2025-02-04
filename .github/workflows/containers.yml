@@ -96,9 +96,6 @@ jobs:
         with:
           path: tmp/cache-in-github-action
           key: ${{ hashFiles('**/ubuntu-nix-sudoer/Containerfile') }}
-      - name: Generate Prime Numbers
-        if: steps.cache-containerfile.outputs.cache-hit == 'true'
-        run: /generate-primes.sh -d prime-numbers
       - name: Install gh-action-escape
         run: curl -fsSL https://raw.githubusercontent.com/kachick/gh-action-escape/main/scripts/install-in-github-action.sh | sh -s v0.2.0
       - name: Build Image
