@@ -13,6 +13,11 @@ on:
       - '**Containerfile'
       - '.containerignore'
       - '.github/workflows/containers.yml'
+  # Don't push same image with different digest even through scheduled triggers
+  schedule:
+    # Every 11:42 and 23:42 JST
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+    - cron: '42 2,14 * * *'
   workflow_dispatch:
 
 jobs:
@@ -25,6 +30,7 @@ jobs:
       ref_tag: ${{ steps.tags.outputs.ref }}
       special_tag: ${{ steps.tags.outputs.special }}
       timestamp_tag: ${{ steps.tags.outputs.timestamp }}
+      container_files_changed: ${{ steps.check-containerfiles-changed.outputs.changed }}
     steps:
       - name: Get started timestamp
         id: timestamp
@@ -52,8 +58,27 @@ jobs:
 
           echo "special=${special}" | tee -a "$GITHUB_OUTPUT"
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+      - name: Memorize container hash
+        id: cache-containerfiles-hash
+        uses: actions/cache@v4
+        with:
+          path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
+          key: |
+            ${{ hashFiles('**/Containerfile', 'images/**/*.bash') }}
+      - name: Check containerfiles are changed
+        id: check-containerfiles-changed
+        run: |
+          if [ '${{ steps.cache-containerfiles-hash.outputs.cache-hit }}' = 'true' ]; then
+            echo "changed=false" | tee -a "$GITHUB_OUTPUT"
+          else
+            mkdir -p ./tmp
+            touch './tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
+            echo "changed=true" | tee -a "$GITHUB_OUTPUT"
+          fi
   ubuntu-nix-sudoer:
     needs: [get-meta]
+    if: needs.get-meta.outputs.container_files_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
@@ -65,6 +90,15 @@ jobs:
           crun --version
           buildah version
       - uses: actions/checkout@v4
+      - name: Memorize container hash
+        id: cache-containerfile
+        uses: actions/cache@v4
+        with:
+          path: tmp/cache-in-github-action
+          key: ${{ hashFiles('**/ubuntu-nix-sudoer/Containerfile') }}
+      - name: Generate Prime Numbers
+        if: steps.cache-containerfile.outputs.cache-hit == 'true'
+        run: /generate-primes.sh -d prime-numbers
       - name: Install gh-action-escape
         run: curl -fsSL https://raw.githubusercontent.com/kachick/gh-action-escape/main/scripts/install-in-github-action.sh | sh -s v0.2.0
       - name: Build Image
@@ -116,6 +150,7 @@ jobs:
               jq | gh-action-escape -name=json | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-systemd:
     needs: [get-meta]
+    if: needs.get-meta.outputs.container_files_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
