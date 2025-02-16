@@ -78,7 +78,7 @@ jobs:
           fi
   ubuntu-nix-sudoer:
     needs: [get-meta]
-    if: needs.get-meta.outputs.container_files_changed == 'true'
+    # if: needs.get-meta.outputs.container_files_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
@@ -147,7 +147,7 @@ jobs:
 
   ubuntu-nix-systemd:
     needs: [get-meta]
-    if: needs.get-meta.outputs.container_files_changed == 'true'
+    # if: needs.get-meta.outputs.container_files_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
