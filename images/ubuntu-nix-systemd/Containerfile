@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:24.04_stable@sha256:ccad6c6d9b628eb7966924208f1825b7974e075266f3053dc44d89a40754d640
+FROM public.ecr.aws/ubuntu/ubuntu:24.04_stable@sha256:0d01f943e5bf2bb4cca1e18d6621864f33d76606d2037640537b84f908281457
 
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
