@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:24.04_stable@sha256:a0dc77bc556621fd5f59aa3a1ab15397e663d21df492eee218e9cbcedccd84a4
+FROM public.ecr.aws/ubuntu/ubuntu:24.04_stable@sha256:f015e542b9bc8c2b82a773bfacbd3b0a4b9f6f961c5570507c65a2cb0934faaa
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - sudoer"
