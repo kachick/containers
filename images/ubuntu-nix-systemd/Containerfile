@@ -17,6 +17,8 @@ ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
   --extra-conf "sandbox = false" \
+  --extra-conf "trusted-users = root user" \
+  --extra-conf "accept-flake-config = true" \
   --no-start-daemon \
   --no-confirm
 
