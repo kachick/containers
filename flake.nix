@@ -1,9 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     selfup = {
-      url = "github:kachick/selfup/v1.1.8";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:kachick/selfup/v1.2.1";
     };
   };
 
@@ -18,7 +17,7 @@
       forAllSystems = lib.genAttrs lib.systems.flakeExposed;
     in
     {
-      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
       devShells = forAllSystems (
         system:
         let
@@ -30,8 +29,9 @@
               (with pkgs; [
                 bashInteractive
                 findutils # xargs
-                nixfmt-rfc-style
-                nil
+                nixfmt
+                nixfmt-tree
+                nixd
                 go-task
 
                 shfmt
