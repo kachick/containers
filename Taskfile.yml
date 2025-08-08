@@ -33,11 +33,3 @@ tasks:
   'try:sudoer':
     cmds:
       - ./images/ubuntu-nix-sudoer/try.bash '{{.USER}}'
-  deps:
-    cmds:
-      - nix --version
-      - nil --version
-      - task --version
-      - dprint --version
-      - typos --version
-      - trivy --version
