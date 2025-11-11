@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.licenses=MIT
 # Available versions in apt: https://packages.ubuntu.com/noble/curl
 # --no-install-recommends omits ca-certificates
 RUN apt-get update \
- && apt-get install --no-install-recommends -y curl	ca-certificates \
+ && apt-get install --no-install-recommends -y curl	ca-certificates xz-utils \
  systemd \
  git \
  && apt-get clean \
@@ -16,12 +16,11 @@ RUN apt-get update \
 
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
-  --extra-conf "sandbox = false" \
-  --extra-conf "trusted-users = root user" \
-  --extra-conf "accept-flake-config = true" \
-  --no-start-daemon \
-  --no-confirm
+COPY ./images/ubuntu-nix-systemd/extra.nix.conf /provisioner/extra.nix.conf
+
+RUN ["/bin/bash", "-c", "sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon --yes \
+  --no-channel-add \
+  --nix-extra-conf-file /provisioner/extra.nix.conf"]
 
 # TODO: Consider to extract from this repository
 ARG username="user"
