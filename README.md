@@ -10,10 +10,10 @@ Usage is written in README.md in each images directory.
 | Name                                            | Build in loccal              | Examples                                                                                                    |
 | ----------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try:systemd USER=user` | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
-| [ubuntu-nix-sudoer](images/ubuntu-nix-sudoer)   | `task try:sudoer USER=user`  | `podman run --user=user --rm -it ghcr.io/kachick/ubuntu-nix-sudoer:latest`                                  |
 
 ## Motivation
 
-- I want to avoid using alpine and busybox for base images. Nix official images uses it.
+- Use Nix via systemd even in containers
+- Avoid using alpine and busybox for base images. Nix official images use it.
   - [nixos/nix](https://hub.docker.com/r/nixos/nix/tags)
   - [nixpkgs/nix](https://hub.docker.com/r/nixpkgs/nix) => https://github.com/nix-community/docker-nixpkgs/blob/bfac57f18680c9b2927b9c85a17e5b4cd89c27f2/lib/buildCLIImage.nix#L2

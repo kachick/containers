@@ -30,6 +30,3 @@ tasks:
   'try:systemd':
     cmds:
       - ./images/ubuntu-nix-systemd/try.bash '{{.USER}}'
-  'try:sudoer':
-    cmds:
-      - ./images/ubuntu-nix-sudoer/try.bash '{{.USER}}'
