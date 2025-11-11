@@ -16,7 +16,10 @@ RUN apt-get update \
 
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
+# AFAIK, we can not use official installer for this purpose because it does not have options similar to `--no-start-daemon`
+# We need to clarify setting `experimental-features = nix-command flakes`. It is different from DeterminateSystems/nix-installer
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/experimental-installer | sh -s -- install linux \
+  --extra-conf "experimental-features = nix-command flakes" \
   --extra-conf "sandbox = false" \
   --extra-conf "trusted-users = root user" \
   --extra-conf "accept-flake-config = true" \
