@@ -56,7 +56,7 @@ jobs:
           token: ${{ github.token }}
           package-version-ids: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
       - name: Prepare git to run gh commands
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Post comments to the PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
