@@ -38,4 +38,4 @@ bash: sudo: command not found
 - Devcontainer
   - https://github.com/kachick/wait-other-jobs/pull/517
   - https://github.com/kachick/devcontainer-ubuntu-nix
-- [Installer](https://github.com/DeterminateSystems/nix-installer)
+- [Installer](https://github.com/NixOS/experimental-nix-installer)
