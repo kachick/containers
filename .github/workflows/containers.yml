@@ -58,7 +58,7 @@ jobs:
 
           echo "special=${special}" | tee -a "$GITHUB_OUTPUT"
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Memorize container hash
         id: cache-containerfiles-hash
         uses: actions/cache@v4
@@ -89,7 +89,7 @@ jobs:
           podman version
           crun --version
           buildah version
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
@@ -149,7 +149,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Prepare git to run gh commands
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Post comments
         if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') }}
         env:
