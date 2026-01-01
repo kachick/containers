@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Memorize container hash
         id: cache-containerfiles-hash
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
           key: |
