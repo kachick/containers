@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     selfup = {
-      url = "github:kachick/selfup/v1.2.1";
+      url = "github:kachick/selfup/v1.3.0";
     };
   };
 

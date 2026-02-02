@@ -18,16 +18,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1753939845,
-        "narHash": "sha256-K2ViRJfdVGE8tpJejs8Qpvvejks1+A4GQej/lBk5y7I=",
+        "lastModified": 1760164275,
+        "narHash": "sha256-gKl2Gtro/LNf8P+4L3S2RsZ0G390ccd5MyXYrTdMCFE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "94def634a20494ee057c76998843c015909d6311",
+        "rev": "362791944032cb532aabbeed7887a441496d5e6e",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -43,16 +43,16 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1754567331,
-        "narHash": "sha256-Hdu3C1BoRyFBB+1asE9Rta8bY8vz/58+zzhD+/IuH0Y=",
+        "lastModified": 1760254797,
+        "narHash": "sha256-S84ao1t0SLEHeHdPWUsRxe60kefBKoEKVWYaedu0sIo=",
         "owner": "kachick",
         "repo": "selfup",
-        "rev": "90889b103ace77cb281d1a1dab36622533453097",
+        "rev": "2bf2b98935902f93246f56a63f74b1431bb53acc",
         "type": "github"
       },
       "original": {
         "owner": "kachick",
-        "ref": "v1.2.1",
+        "ref": "v1.3.0",
         "repo": "selfup",
         "type": "github"
       }
