@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:24.04_stable@sha256:6b4c0f97bc73e76ac20ef992258e9b8c831b7755d2047d83109da8eb279881fe
+FROM public.ecr.aws/docker/library/buildpack-deps:24.04-scm@sha256:dd8ba9847db19c458ddb5d55fec0155ea49a98bc689540469690052c3db2afc7
 
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
@@ -8,9 +8,7 @@ LABEL org.opencontainers.image.licenses=MIT
 # Available versions in apt: https://packages.ubuntu.com/noble/curl
 # --no-install-recommends omits ca-certificates
 RUN apt-get update \
- && apt-get install --no-install-recommends -y curl	ca-certificates \
- systemd \
- git \
+ && apt-get install --no-install-recommends -y systemd \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
