@@ -13,6 +13,16 @@
     "dependencies",
     "renovate"
   ],
+  "packageRules": [
+    {
+      "matchManagers": ["dockerfile"],
+      // Only bump digest
+      // https://github.com/renovatebot/renovate/discussions/14883
+      // https://github.com/kachick/containers/pull/292#issuecomment-3873277895
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "enabled": false
+    }
+  ],
   "nix": {
     "enabled": false
   },
