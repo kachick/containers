@@ -118,6 +118,8 @@ fn start_and_enter_container(image_id: &str, user: &str) -> Result<()> {
             "exec",
             "--user",
             user,
+            "--workdir",
+            &format!("/home/{}", user),
             "--interactive",
             "--tty",
             &container_id,
