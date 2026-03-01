@@ -157,10 +157,15 @@ jobs:
         run: |
           (
           cat <<'EOF'
-          ⬢🦭 Staging container-image has been deployed 🚀\
-          You can check in package URL
+          ⬢🦭 Staging container-image has been deployed 🚀
 
-          * systemd: https://github.com/${{ github.repository }}/pkgs/container/ubuntu-24.04-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }}
+          You can test the interactive shell 🐚 as follows.
+
+          ```bash
+          bash <(curl -fsSL 'https://raw.githubusercontent.com/kachick/containers/${{ github.event.pull_request.head.sha }}/sandbox-with-ghcr.bash') '${{ github.event.pull_request.head.sha }}'
+          ```
+
+          [Package detail](https://github.com/${{ github.repository }}/pkgs/container/ubuntu-24.04-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }})
 
           This image will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
           EOF
