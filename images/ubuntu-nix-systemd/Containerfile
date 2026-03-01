@@ -16,7 +16,9 @@ ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
 # AFAIK, we can not use original installer for this purpose because it does not have options similar to `--no-start-daemon`
 # Instead, https://github.com/NixOS/nix-installer is now an official and modernized beta installer.
-# We need to clarify setting `experimental-features = nix-command flakes`. It is different from DeterminateSystems/nix-installer
+#
+# * `experimental-features = nix-command flakes`: It was a different default from DeterminateSystems/nix-installer
+# * accept-flake-config: Potentially insecure setting, but reasonable for this container image
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-installer | sh -s -- install linux \
   --extra-conf "experimental-features = nix-command flakes" \
   --extra-conf "sandbox = false" \
@@ -27,7 +29,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-inst
 Yg3Fs= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= niks3.numtide.com-1:DTx8w
 ZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g= selfup.cachix.org-1:eY2eEd955BmRI7SultbRIV81vApqpJixu
 nkV3XlXuT8= kachick-dotfiles.cachix.org-1:XhiP3JOkqNFGludaN+/send30shcrn1UMDeRL9XttkI=" \
-  --extra-conf "accept-flake-config = true" \ # Potentially insecure setting, but reasonable for this container image
+  --extra-conf "accept-flake-config = true" \
   --no-start-daemon \
   --no-confirm
 
