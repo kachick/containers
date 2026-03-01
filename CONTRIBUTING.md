@@ -9,13 +9,6 @@
 - <https://github.com/kachick/wait-other-jobs/pull/517>
 - [podman-remote can't use --latest flag for ps](https://github.com/kachick/dotfiles/issues/448)
 
-## Setup
+## Why?
 
-1. Install [Nix](https://nixos.org/) package manager
-2. Run `nix-shell` or `nix-shell --command 'zsh'`
-3. You can use development tools
-
-```console
-> nix-shell
-(prepared bash)
-```
+- `pkgs.dockerTools` does not fit here because this repo provides a full Nix environment with systemd and multi-user setup, not just a package.

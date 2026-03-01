@@ -6,3 +6,9 @@ updates:
       interval: 'monthly'
     ignore:
       - dependency-name: 'crate-ci/typos'
+  - package-ecosystem: 'cargo'
+    directory: '/container-try'
+    schedule:
+      interval: 'weekly'
+    cooldown:
+      default-days: 3

@@ -1,3 +1,6 @@
 .direnv
 
 tmp/
+**/target/
+result
+result-*

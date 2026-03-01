@@ -3,13 +3,20 @@
 [![CI - Nix Status](https://github.com/kachick/containers/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci-nix.yml?query=branch%3Amain+)
 [![CI - Container Status](https://github.com/kachick/containers/actions/workflows/containers.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/containers.yml?query=branch%3Amain+)
 
-Usage is written in README.md in each images directory.
-
 ## Container Images
 
-| Name                                            | Build in loccal              | Examples                                                                                                    |
+| Name                                            | Build in local               | Examples                                                                                                    |
 | ----------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try:systemd USER=user` | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
+
+## Usage
+
+You can build local images or pull from GHCR and try them interactively with the helper tool `container-try`.
+
+```bash
+# Pull and try the latest image from GHCR
+nix run github:kachick/containers#container-try -- pull
+```
 
 ## Motivation
 

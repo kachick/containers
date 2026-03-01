@@ -7,12 +7,14 @@ on:
       - '*.nix'
       - 'flake.*'
       - 'Taskfile.yml'
+      - 'container-try/**'
   pull_request:
     paths:
       - '.github/workflows/ci-nix.yml'
       - '*.nix'
       - 'flake.*'
       - 'Taskfile.yml'
+      - 'container-try/**'
   schedule:
     # Every 10:42 JST
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
@@ -38,3 +40,4 @@ jobs:
       - run: nix flake check
       - run: nix develop --command echo 'This step should be done before any other "nix develop" steps because of measuring Nix build time'
       - run: nix develop --command task check
+      - run: nix build .#container-try

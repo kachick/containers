@@ -2,5 +2,10 @@
   "editor.defaultFormatter": "dprint.dprint",
   "editor.formatOnSave": true,
   "nix.enableLanguageServer": true,
-  "nix.serverPath": "nixd"
+  "nix.serverPath": "nixd",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true,
+    "editor.inlayHints.enabled": "onUnlessPressed"
+  }
 }
