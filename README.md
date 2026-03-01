@@ -17,3 +17,9 @@ Usage is written in README.md in each images directory.
 - Avoid using alpine and busybox for base images. Nix official images use it.
   - [nixos/nix](https://hub.docker.com/r/nixos/nix/tags)
   - [nixpkgs/nix](https://hub.docker.com/r/nixpkgs/nix) => https://github.com/nix-community/docker-nixpkgs/blob/bfac57f18680c9b2927b9c85a17e5b4cd89c27f2/lib/buildCLIImage.nix#L2
+
+## Design Decisions
+
+### Why not `pkgs.dockerTools`?
+
+`dockerTools` is excellent for distributing static artifacts. However, our goal is to provide a **complete Nix environment** (multi-user Nix with systemd on a familiar OS). Using a standard base image like Ubuntu is more practical for this purpose.
