@@ -7,5 +7,5 @@
     "editor.defaultFormatter": "rust-lang.rust-analyzer",
     "editor.formatOnSave": true,
     "editor.inlayHints.enabled": "onUnlessPressed"
-  },
+  }
 }
