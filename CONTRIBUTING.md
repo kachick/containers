@@ -11,4 +11,4 @@
 
 ## Why?
 
-- `pkgs.dockerTools` will not fit at here. Because this repo provides a ready-to-use Nix environment with systemd and multi-user setup, not just distribute a package.
+- `pkgs.dockerTools` does not fit here because this repo provides a full Nix environment with systemd and multi-user setup, not just a package.
