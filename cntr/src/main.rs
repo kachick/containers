@@ -14,25 +14,25 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Build and run the container interactively (replaces try.bash)
-    Try {
-        /// Username for the container
-        #[arg(default_value = "user")]
-        user: String,
-
-        /// Image tag name
-        #[arg(long, default_value = "ubuntu-nix-systemd")]
+    /// Build a local image and run it
+    Build {
+        /// Image name (corresponds to directory in images/)
+        #[arg(default_value = "ubuntu-nix-systemd")]
         image: String,
+
+        /// Username for the container
+        #[arg(long, default_value = "user")]
+        user: String,
     },
-    /// Pull and run the container from GHCR (replaces ghcr.bash)
-    Sandbox {
-        /// Tag to pull (e.g., latest, pr-1)
+    /// Pull an image from a registry and run it
+    Pull {
+        /// Tag to pull (e.g., latest, pr-42)
         #[arg(default_value = "latest")]
         tag: String,
 
-        /// Registry path
-        #[arg(long, default_value = "ghcr.io/kachick/ubuntu-24.04-nix-systemd")]
-        registry: String,
+        /// Image path (registry + package)
+        #[arg(long, short, default_value = "ghcr.io/kachick/ubuntu-24.04-nix-systemd")]
+        image: String,
 
         /// Username for the container
         #[arg(long, default_value = "user")]
@@ -44,18 +44,18 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Try { user, image } => {
-            run_try(user, image)?;
+        Commands::Build { image, user } => {
+            run_build(image, user)?;
         }
-        Commands::Sandbox { tag, registry, user } => {
-            run_sandbox(tag, registry, user)?;
+        Commands::Pull { tag, image, user } => {
+            run_pull(tag, image, user)?;
         }
     }
 
     Ok(())
 }
 
-fn run_try(user: &str, image: &str) -> Result<()> {
+fn run_build(image: &str, user: &str) -> Result<()> {
     println!("Building image: {} for user: {}", image, user);
 
     let status = Command::new("podman")
@@ -79,8 +79,8 @@ fn run_try(user: &str, image: &str) -> Result<()> {
     start_and_enter_container(image, user)
 }
 
-fn run_sandbox(tag: &str, registry: &str, user: &str) -> Result<()> {
-    let full_image = format!("{}:{}", registry, tag);
+fn run_pull(tag: &str, image_path: &str, user: &str) -> Result<()> {
+    let full_image = format!("{}:{}", image_path, tag);
     println!("Pulling image: {}", full_image);
 
     let status = Command::new("podman")
