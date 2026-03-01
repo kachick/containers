@@ -12,10 +12,9 @@
 
 ## Usage
 
-You can build local images or pull from GHCR and try them interactively with the helper tool `systemd-container-shell`.
+You can build local images or pull from GHCR and try the shell with the helper tool `systemd-container-shell`.
 
 ```bash
-# Pull and try the latest image from GHCR
 nix run github:kachick/containers#systemd-container-shell -- pull
 ```
 

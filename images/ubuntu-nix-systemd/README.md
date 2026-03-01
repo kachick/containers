@@ -5,8 +5,7 @@
 Keep systemd in background and use it with another user
 
 ```bash
-# Pull and try the latest image from GHCR
-nix run github:kachick/containers#systemd-container-shell -- pull
+nix run github:kachick/containers#systemd-container-shell -- build
 ```
 
 Make sure non root and non sudoers can run nix features

@@ -31,7 +31,7 @@
         {
           systemd-container-shell = pkgs.rustPlatform.buildRustPackage {
             pname = "systemd-container-shell";
-            version = "0.1.0";
+            version = with builtins; (fromTOML (readFile ./systemd-container-shell/Cargo.toml)).package.version;
             src = ./systemd-container-shell;
             cargoLock.lockFile = ./systemd-container-shell/Cargo.lock;
 
