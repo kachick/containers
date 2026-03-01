@@ -20,7 +20,7 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          default = pkgs.mkShellNoCC {
+          default = pkgs.mkShell {
             buildInputs = with pkgs; [
               bashInteractive
               findutils # xargs
@@ -37,6 +37,12 @@
 
               dprint
               typos
+
+              rustc
+              cargo
+              rust-analyzer
+              rustfmt
+              clippy
             ];
           };
         }
