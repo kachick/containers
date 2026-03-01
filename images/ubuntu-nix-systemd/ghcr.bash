@@ -29,4 +29,4 @@ sandbox() {
 	podman exec --user=user --workdir='/home/user' -eTERM -it "$container_id" bash
 }
 
-sandbox "$1"
+sandbox "${1:-latest}"

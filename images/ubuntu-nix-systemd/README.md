@@ -5,9 +5,7 @@
 Keep systemd in background and use it with another user
 
 ```bash
-container_id="$(podman run --rm --detach ghcr.io/kachick/ubuntu-nix-systemd:latest)"
-sleep 1
-podman exec --user=user -it "$container_id" bash
+./ghcr.bash
 ```
 
 Make sure non root and non sudoers can run nix features

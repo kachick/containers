@@ -162,7 +162,7 @@ jobs:
           You can test the interactive shell 🐚 as follows.
 
           ```bash
-          bash <(curl -fsSL 'https://raw.githubusercontent.com/kachick/containers/${{ github.event.pull_request.head.sha }}/sandbox-with-ghcr.bash') '${{ github.event.pull_request.head.sha }}'
+          bash <(curl -fsSL 'https://raw.githubusercontent.com/kachick/containers/${{ github.event.pull_request.head.sha }}/images/ubuntu-nix-systemd/ghcr.bash') '${{ github.event.pull_request.head.sha }}'
           ```
 
           [Package detail](https://github.com/${{ github.repository }}/pkgs/container/ubuntu-24.04-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }})
