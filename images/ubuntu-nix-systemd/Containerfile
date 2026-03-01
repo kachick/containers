@@ -18,10 +18,8 @@ ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 # AFAIK, we can not use original installer for this purpose because it does not have options similar to `--no-start-daemon`
 # Instead, https://github.com/NixOS/nix-installer is now an official and modernized beta installer.
 #
-# * `experimental-features = nix-command flakes`: It was a different default from DeterminateSystems/nix-installer
 # * accept-flake-config: Potentially insecure setting, but reasonable for this container image
 RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-installer | sh -s -- install linux \
-  --extra-conf "experimental-features = nix-command flakes" \
   --extra-conf "sandbox = false" \
   --extra-conf "trusted-users = root user" \
   --extra-conf "extra-trusted-substituters = https://nix-community.cachix.org https://cache.garnix.io https://cache.numtide.com https://selfup.cachix.org https://kachick-dotfiles.cachix.org" \
