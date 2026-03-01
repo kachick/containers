@@ -12,11 +12,11 @@
 
 ## Usage
 
-You can build local images or pull from GHCR and try them interactively with the helper tool `container-try`.
+You can build local images or pull from GHCR and try them interactively with the helper tool `systemd-container-shell`.
 
 ```bash
 # Pull and try the latest image from GHCR
-nix run github:kachick/containers#container-try -- pull
+nix run github:kachick/containers#systemd-container-shell -- pull
 ```
 
 ## Motivation

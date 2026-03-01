@@ -29,24 +29,24 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          container-try = pkgs.rustPlatform.buildRustPackage {
-            pname = "container-try";
+          systemd-container-shell = pkgs.rustPlatform.buildRustPackage {
+            pname = "systemd-container-shell";
             version = "0.1.0";
-            src = ./container-try;
-            cargoLock.lockFile = ./container-try/Cargo.lock;
+            src = ./systemd-container-shell;
+            cargoLock.lockFile = ./systemd-container-shell/Cargo.lock;
 
             doInstallCheck = true;
             installCheckPhase = ''
               runHook preInstallCheck
-              "$out/bin/container-try" --help
+              "$out/bin/systemd-container-shell" --help
               runHook postInstallCheck
             '';
 
             meta = {
-              mainProgram = "container-try";
+              mainProgram = "systemd-container-shell";
             };
           };
-          default = self.packages.${system}.container-try;
+          default = self.packages.${system}.systemd-container-shell;
         }
       );
       devShells = forAllSystems (

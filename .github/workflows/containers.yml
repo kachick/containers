@@ -162,7 +162,7 @@ jobs:
           You can test the interactive shell 🐚 as follows.
 
           ```bash
-          nix run github:${{ github.repository }}/${{ github.event.pull_request.head.sha }}#container-try -- pull ${{ github.event.pull_request.head.sha }}
+          nix run github:${{ github.repository }}/${{ github.event.pull_request.head.sha }}#systemd-container-shell -- pull ${{ github.event.pull_request.head.sha }}
           ```
 
           [Package detail](https://github.com/${{ github.repository }}/pkgs/container/ubuntu-24.04-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }})

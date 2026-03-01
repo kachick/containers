@@ -5,7 +5,7 @@ use std::thread;
 use std::time::Duration;
 
 #[derive(Parser)]
-#[command(name = "container-try")]
+#[command(name = "systemd-container-shell")]
 #[command(about = "Container management tool for nix-containers", long_about = None)]
 struct Cli {
     #[command(subcommand)]

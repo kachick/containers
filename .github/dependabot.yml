@@ -7,7 +7,7 @@ updates:
     ignore:
       - dependency-name: 'crate-ci/typos'
   - package-ecosystem: 'cargo'
-    directory: '/container-try'
+    directory: '/systemd-container-shell'
     schedule:
       interval: 'weekly'
     cooldown:
