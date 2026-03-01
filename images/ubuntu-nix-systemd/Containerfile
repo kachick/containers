@@ -21,7 +21,13 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-inst
   --extra-conf "experimental-features = nix-command flakes" \
   --extra-conf "sandbox = false" \
   --extra-conf "trusted-users = root user" \
-  --extra-conf "accept-flake-config = true" \
+  --extra-conf "extra-trusted-substituters = https://nix-community.cachix.org https://cache.garnix.io https:/
+/cache.numtide.com https://selfup.cachix.org https://kachick-dotfiles.cachix.org" \
+  --extra-conf "extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRC
+Yg3Fs= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= niks3.numtide.com-1:DTx8w
+ZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g= selfup.cachix.org-1:eY2eEd955BmRI7SultbRIV81vApqpJixu
+nkV3XlXuT8= kachick-dotfiles.cachix.org-1:XhiP3JOkqNFGludaN+/send30shcrn1UMDeRL9XttkI=" \
+  --extra-conf "accept-flake-config = true" \ # Potentially insecure setting, but reasonable for this container image
   --no-start-daemon \
   --no-confirm
 
