@@ -14,7 +14,6 @@ RUN apt-get update \
 
 ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
 
-# :)
 # AFAIK, we can not use original installer for this purpose because it does not have options similar to `--no-start-daemon`
 # Instead, https://github.com/NixOS/nix-installer is now an official and modernized beta installer.
 #
