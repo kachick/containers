@@ -1,16 +1,12 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    selfup = {
-      url = "github:kachick/selfup/v1.3.0";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      selfup,
     }:
     let
       inherit (nixpkgs) lib;
@@ -25,25 +21,23 @@
         in
         {
           default = pkgs.mkShellNoCC {
-            buildInputs =
-              (with pkgs; [
-                bashInteractive
-                findutils # xargs
-                nixfmt
-                nixfmt-tree
-                nixd
-                go-task
+            buildInputs = with pkgs; [
+              bashInteractive
+              findutils # xargs
+              nixfmt
+              nixfmt-tree
+              nixd
+              go-task
 
-                shfmt
-                shellcheck
+              shfmt
+              shellcheck
 
-                buildah
-                trivy
+              buildah
+              trivy
 
-                dprint
-                typos
-              ])
-              ++ [ selfup.packages.${system}.default ];
+              dprint
+              typos
+            ];
           };
         }
       );
