@@ -157,7 +157,7 @@ jobs:
         run: |
           (
           cat <<'EOF'
-          ⬢🦭 Staging container-image has been deployed 🚀\
+          ⬢🦭 Staging container-image has been deployed 🚀
 
           You can test the interactive shell 🐚 as follows.
 
