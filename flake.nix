@@ -14,6 +14,21 @@
     in
     {
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          cntr = pkgs.rustPlatform.buildRustPackage {
+            pname = "cntr";
+            version = "0.1.0";
+            src = ./cntr;
+            cargoLock.lockFile = ./cntr/Cargo.lock;
+          };
+          default = self.packages.${system}.cntr;
+        }
+      );
       devShells = forAllSystems (
         system:
         let
