@@ -3,26 +3,11 @@
 [![CI - Nix Status](https://github.com/kachick/containers/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci-nix.yml?query=branch%3Amain+)
 [![CI - Container Status](https://github.com/kachick/containers/actions/workflows/containers.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/containers.yml?query=branch%3Amain+)
 
-Usage is written in README.md in each images directory.
-
 ## Container Images
 
 | Name                                            | Build in local               | Examples                                                                                                    |
 | ----------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try:systemd USER=user` | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
-
-## Motivation
-
-- Use Nix via systemd even in containers
-- Avoid using alpine and busybox for base images. Nix official images use it.
-  - [nixos/nix](https://hub.docker.com/r/nixos/nix/tags)
-  - [nixpkgs/nix](https://hub.docker.com/r/nixpkgs/nix) => https://github.com/nix-community/docker-nixpkgs/blob/bfac57f18680c9b2927b9c85a17e5b4cd89c27f2/lib/buildCLIImage.nix#L2
-
-## Design Decisions
-
-### Why not `pkgs.dockerTools`?
-
-I chose a standard OS base (Ubuntu) over `pkgs.dockerTools` to provide a ready-to-use Nix environment with systemd and multi-user setup.
 
 ## Usage
 
@@ -32,3 +17,10 @@ You can build local images or pull from GHCR and try them interactively with the
 # Pull and try the latest image from GHCR
 nix run github:kachick/containers#container-try -- pull
 ```
+
+## Motivation
+
+- Use Nix via systemd even in containers
+- Avoid using alpine and busybox for base images. Nix official images use it.
+  - [nixos/nix](https://hub.docker.com/r/nixos/nix/tags)
+  - [nixpkgs/nix](https://hub.docker.com/r/nixpkgs/nix) => https://github.com/nix-community/docker-nixpkgs/blob/bfac57f18680c9b2927b9c85a17e5b4cd89c27f2/lib/buildCLIImage.nix#L2
