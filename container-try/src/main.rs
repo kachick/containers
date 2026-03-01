@@ -40,6 +40,21 @@ enum Commands {
     },
 }
 
+struct ContainerGuard {
+    id: String,
+}
+
+impl Drop for ContainerGuard {
+    fn drop(&mut self) {
+        if !self.id.is_empty() {
+            println!("Stopping container {}...", self.id);
+            let _ = Command::new("podman")
+                .args(["stop", &self.id])
+                .status();
+        }
+    }
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -109,6 +124,11 @@ fn start_and_enter_container(image_id: &str, user: &str) -> Result<()> {
     let container_id = String::from_utf8_lossy(&output.stdout).trim().to_string();
     println!("Container started: {}", container_id);
 
+    // RAII: Ensure the container is stopped when this function exits (even on error or panic)
+    let _guard = ContainerGuard {
+        id: container_id.clone(),
+    };
+
     // Wait for systemd to be ready
     thread::sleep(Duration::from_secs(1));
 
@@ -127,11 +147,6 @@ fn start_and_enter_container(image_id: &str, user: &str) -> Result<()> {
         ])
         .status()
         .context("Failed to execute podman exec")?;
-
-    println!("Stopping container...");
-    let _ = Command::new("podman")
-        .args(["stop", &container_id])
-        .status();
 
     if !status.success() {
         anyhow::bail!("podman exec session failed");
