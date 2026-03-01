@@ -1,4 +1,6 @@
 .direnv
 
 tmp/
-/cntr/target/
+**/target/
+result
+result-*

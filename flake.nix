@@ -20,13 +20,13 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          cntr = pkgs.rustPlatform.buildRustPackage {
-            pname = "cntr";
+          container-try = pkgs.rustPlatform.buildRustPackage {
+            pname = "container-try";
             version = "0.1.0";
-            src = ./cntr;
-            cargoLock.lockFile = ./cntr/Cargo.lock;
+            src = ./container-try;
+            cargoLock.lockFile = ./container-try/Cargo.lock;
           };
-          default = self.packages.${system}.cntr;
+          default = self.packages.${system}.container-try;
         }
       );
       devShells = forAllSystems (

@@ -7,7 +7,7 @@ Usage is written in README.md in each images directory.
 
 ## Container Images
 
-| Name                                            | Build in loccal              | Examples                                                                                                    |
+| Name                                            | Build in local               | Examples                                                                                                    |
 | ----------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try:systemd USER=user` | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
 
@@ -22,4 +22,13 @@ Usage is written in README.md in each images directory.
 
 ### Why not `pkgs.dockerTools`?
 
-`dockerTools` is excellent for distributing static artifacts. However, our goal is to provide a **complete Nix environment** (multi-user Nix with systemd on a familiar OS). Using a standard base image like Ubuntu is more practical for this purpose.
+I chose a standard OS base (Ubuntu) over `pkgs.dockerTools` to provide a ready-to-use Nix environment with systemd and multi-user setup.
+
+## Usage
+
+You can build local images or pull from GHCR and try them interactively with the helper tool `container-try`.
+
+```bash
+# Pull and try the latest image from GHCR
+nix run github:kachick/containers#container-try -- pull
+```
