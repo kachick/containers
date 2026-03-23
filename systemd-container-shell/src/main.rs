@@ -26,11 +26,14 @@ enum Commands {
     },
     /// Pull an image from a registry and run it
     Pull {
-        /// Tag to pull (e.g., latest, pr-42, 20260301-094713-utc)
-        #[arg(default_value = "latest")]
-        tag: String,
+        /// Image reference or tag.
+        /// If starts with ':', it's a tag for the default image (e.g., :latest, :20260301-094713-utc).
+        /// If contains '/', it's treated as a full image path.
+        /// Otherwise, it's treated as a tag for the default image for convenience.
+        #[arg(default_value = ":latest")]
+        reference: String,
 
-        /// Image path (registry + package)
+        /// Override default image path (registry + package)
         #[arg(long, short, default_value = "ghcr.io/kachick/ubuntu-24.04-nix-systemd")]
         image: String,
 
@@ -66,8 +69,8 @@ fn main() -> Result<()> {
         Commands::Build { image, user } => {
             run_build(image, user)?;
         }
-        Commands::Pull { tag, image, user, skip_pull } => {
-            run_pull(tag, image, user, *skip_pull)?;
+        Commands::Pull { reference, image, user, skip_pull } => {
+            run_pull(reference, image, user, *skip_pull)?;
         }
     }
 
@@ -98,8 +101,19 @@ fn run_build(image: &str, user: &str) -> Result<()> {
     start_and_enter_container(image, user)
 }
 
-fn run_pull(tag: &str, image_path: &str, user: &str, skip_pull: bool) -> Result<()> {
-    let full_image = format!("{}:{}", image_path, tag);
+fn run_pull(reference: &str, default_image: &str, user: &str, skip_pull: bool) -> Result<()> {
+    let full_image = if reference.starts_with(':') {
+        format!("{}{}", default_image, reference)
+    } else if reference.contains('/') {
+        if reference.contains(':') {
+            reference.to_string()
+        } else {
+            format!("{}:latest", reference)
+        }
+    } else {
+        // For convenience in this repo, treat as tag even without leading ':'
+        format!("{}:{}", default_image, reference)
+    };
 
     if skip_pull {
         if image_exists(&full_image)? {
