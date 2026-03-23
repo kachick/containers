@@ -18,6 +18,12 @@ You can build local images or pull from GHCR and try the shell with the helper t
 # Pull latest image and run
 nix run github:kachick/containers#systemd-container-shell -- pull
 
+# Pull specific tag
+nix run github:kachick/containers#systemd-container-shell -- pull 20260301-094713-utc
+
+# Pull specific image and tag
+nix run github:kachick/containers#systemd-container-shell -- pull --image ghcr.io/kachick/ubuntu-24.04-nix-systemd 20260301-094713-utc
+
 # Use local image if exists (skip pull checking)
 nix run github:kachick/containers#systemd-container-shell -- pull --skip-pull
 ```

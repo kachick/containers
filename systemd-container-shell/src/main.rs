@@ -26,7 +26,7 @@ enum Commands {
     },
     /// Pull an image from a registry and run it
     Pull {
-        /// Tag to pull (e.g., latest, pr-42)
+        /// Tag to pull (e.g., latest, pr-42, 20260301-094713-utc)
         #[arg(default_value = "latest")]
         tag: String,
 
