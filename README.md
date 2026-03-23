@@ -15,7 +15,11 @@
 You can build local images or pull from GHCR and try the shell with the helper tool `systemd-container-shell`.
 
 ```bash
+# Pull latest image and run
 nix run github:kachick/containers#systemd-container-shell -- pull
+
+# Use local image if exists (skip pull checking)
+nix run github:kachick/containers#systemd-container-shell -- pull --skip-pull
 ```
 
 ## Motivation

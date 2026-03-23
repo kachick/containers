@@ -5,7 +5,14 @@
 Keep systemd in background and use it with another user
 
 ```bash
+# Build from local
 nix run github:kachick/containers#systemd-container-shell -- build
+
+# Pull from registry
+nix run github:kachick/containers#systemd-container-shell -- pull
+
+# Use local image if exists (skip pull checking)
+nix run github:kachick/containers#systemd-container-shell -- pull --skip-pull
 ```
 
 Make sure non root and non sudoers can run nix features
