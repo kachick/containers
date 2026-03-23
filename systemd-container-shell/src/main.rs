@@ -37,6 +37,10 @@ enum Commands {
         /// Username for the container
         #[arg(long, default_value = "user")]
         user: String,
+
+        /// Skip pulling and use local image if it exists, fail if not found
+        #[arg(long)]
+        skip_pull: bool,
     },
 }
 
@@ -62,8 +66,8 @@ fn main() -> Result<()> {
         Commands::Build { image, user } => {
             run_build(image, user)?;
         }
-        Commands::Pull { tag, image, user } => {
-            run_pull(tag, image, user)?;
+        Commands::Pull { tag, image, user, skip_pull } => {
+            run_pull(tag, image, user, *skip_pull)?;
         }
     }
 
@@ -94,20 +98,37 @@ fn run_build(image: &str, user: &str) -> Result<()> {
     start_and_enter_container(image, user)
 }
 
-fn run_pull(tag: &str, image_path: &str, user: &str) -> Result<()> {
+fn run_pull(tag: &str, image_path: &str, user: &str, skip_pull: bool) -> Result<()> {
     let full_image = format!("{}:{}", image_path, tag);
-    println!("Pulling image: {}", full_image);
 
-    let status = Command::new("podman")
-        .args(["pull", &full_image])
-        .status()
-        .context("Failed to execute podman pull")?;
+    if skip_pull {
+        if image_exists(&full_image)? {
+            println!("Image {} found locally, skipping pull", full_image);
+        } else {
+            anyhow::bail!("Image {} not found locally and --skip-pull specified", full_image);
+        }
+    } else {
+        println!("Pulling image: {}", full_image);
 
-    if !status.success() {
-        anyhow::bail!("podman pull failed");
+        let status = Command::new("podman")
+            .args(["pull", &full_image])
+            .status()
+            .context("Failed to execute podman pull")?;
+
+        if !status.success() {
+            anyhow::bail!("podman pull failed");
+        }
     }
 
     start_and_enter_container(&full_image, user)
+}
+
+fn image_exists(image: &str) -> Result<bool> {
+    let status = Command::new("podman")
+        .args(["image", "exists", image])
+        .status()
+        .context("Failed to check if image exists")?;
+    Ok(status.success())
 }
 
 fn start_and_enter_container(image_id: &str, user: &str) -> Result<()> {
