@@ -83,7 +83,10 @@ jobs:
           fi
   ubuntu-nix-systemd:
     needs: [get-meta]
-    if: (needs.get-meta.outputs.container_files_changed == 'true') || (github.event_name == 'workflow_dispatch')
+    if: >-
+      (needs.get-meta.outputs.container_files_changed == 'true') ||
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
