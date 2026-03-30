@@ -9,6 +9,11 @@ on:
       - '.containerignore'
       - '.github/workflows/containers.yml'
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
     paths:
       - '**Containerfile'
       - '.containerignore'
