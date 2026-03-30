@@ -160,7 +160,6 @@ jobs:
             echo 'JSON'
           } | tee --append "$GITHUB_OUTPUT"
 
-
   announce-staging:
     needs: [get-meta, ubuntu-nix-systemd]
     runs-on: ubuntu-24.04
