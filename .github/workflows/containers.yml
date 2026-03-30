@@ -20,6 +20,11 @@ on:
     - cron: '42 2,14 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+  packages: write
+
 jobs:
   # podman can handle lowercase. So normalize the outputs
   get-meta:
@@ -84,6 +89,8 @@ jobs:
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
+      - name: Install Podman
+        uses: redhat-actions/podman-install@0b0ebeccb256851665136971d7782ba7180773df # commit-0b0ebec
       - name: Logging dependency versions
         run: |
           podman version
@@ -109,13 +116,23 @@ jobs:
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c #v2.8
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: ghcr.io/${{ github.repository_owner }}
-          username: ${{ github.repository_owner }}
-          password: ${{ github.token }}
+        run: |
+          set -euxo pipefail
+
+          image_name="${{ steps.build-image.outputs.image }}"
+          tags="${{ steps.build-image.outputs.tags }}"
+          registry="ghcr.io/${{ github.repository_owner }}"
+
+          for tag in $tags; do
+            full_image_name="${registry}/${image_name}:${tag}"
+            podman tag "${image_name}" "${full_image_name}"
+            # Using --creds to avoid podman login
+            # --digestfile is used to capture the digest for the next step
+            podman push --creds="${{ github.repository_owner }}:${{ github.token }}" --digestfile=digest.txt "${full_image_name}"
+          done
+
+          # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
+          echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
       - name: Log outputs
         if: ${{ github.event_name != 'pull_request' }}
         run: echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
@@ -123,7 +140,7 @@ jobs:
         id: inspect-package
         if: ${{ github.actor == github.repository_owner }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: | #shell
           #
           set -euxo pipefail
@@ -142,6 +159,7 @@ jobs:
 
             echo 'JSON'
           } | tee --append "$GITHUB_OUTPUT"
+
 
   announce-staging:
     needs: [get-meta, ubuntu-nix-systemd]
