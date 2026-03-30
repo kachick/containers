@@ -35,8 +35,7 @@ jobs:
       ref_tag: ${{ steps.tags.outputs.ref }}
       special_tag: ${{ steps.tags.outputs.special }}
       timestamp_tag: ${{ steps.tags.outputs.timestamp }}
-      container_changed: ${{ steps.check-container-changed.outputs.changed }}
-      workflow_changed: ${{ steps.check-workflow-changed.outputs.changed }}
+      container_files_changed: ${{ steps.check-containerfiles-changed.outputs.changed }}
     steps:
       - name: Get started timestamp
         id: timestamp
@@ -65,38 +64,23 @@ jobs:
           echo "special=${special}" | tee -a "$GITHUB_OUTPUT"
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
-      - name: Restore container content cache
-        id: cache-container-content
+      - name: Restore container build cache
+        id: cache-container
         uses: actions/cache/restore@v4
         with:
-          path: 'tmp/container-content-ok'
-          key: content-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
-      - name: Check container content change
-        id: check-container-changed
+          path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
+          key: container-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
+      - name: Check if build is required
+        id: check-containerfiles-changed
         run: |
-          if [ '${{ steps.cache-container-content.outputs.cache-hit }}' = 'true' ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+          if [ '${{ steps.cache-container.outputs.cache-hit }}' = 'true' ]; then
+            echo "changed=false" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Restore workflow logic cache
-        id: cache-workflow-logic
-        uses: actions/cache/restore@v4
-        with:
-          path: 'tmp/workflow-logic-ok'
-          key: workflow-${{ hashFiles('.github/workflows/containers.yml') }}
-      - name: Check workflow logic change
-        id: check-workflow-changed
-        run: |
-          if [ '${{ steps.cache-workflow-logic.outputs.cache-hit }}' = 'true' ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "changed=true" | tee -a "$GITHUB_OUTPUT"
           fi
   ubuntu-nix-systemd:
     needs: [get-meta]
-    if: (needs.get-meta.outputs.container_changed == 'true') || (needs.get-meta.outputs.workflow_changed == 'true') || (github.event_name == 'workflow_dispatch')
+    if: (needs.get-meta.outputs.container_files_changed == 'true') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
@@ -148,24 +132,12 @@ jobs:
 
           # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
           echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
-      - name: Save container build caches
-        if: steps.push-to-ghcr.outcome == 'success'
-        run: |
-          mkdir -p tmp
-          touch tmp/container-content-ok
-          touch tmp/workflow-logic-ok
-      - name: Save container content cache
+      - name: Save container build cache
         if: steps.push-to-ghcr.outcome == 'success'
         uses: actions/cache/save@v4
         with:
-          path: 'tmp/container-content-ok'
-          key: content-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
-      - name: Save workflow logic cache
-        if: steps.push-to-ghcr.outcome == 'success'
-        uses: actions/cache/save@v4
-        with:
-          path: 'tmp/workflow-logic-ok'
-          key: workflow-${{ hashFiles('.github/workflows/containers.yml') }}
+          path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
+          key: container-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
       - name: Log outputs
         if: ${{ github.event_name != 'pull_request' }}
         run: echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
