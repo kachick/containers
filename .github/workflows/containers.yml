@@ -64,21 +64,18 @@ jobs:
           echo "special=${special}" | tee -a "$GITHUB_OUTPUT"
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
-      - name: Memorize container hash
-        id: cache-containerfiles-hash
-        uses: actions/cache@v5
+      - name: Restore container build cache
+        id: cache-container
+        uses: actions/cache/restore@v4
         with:
           path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
-          key: |
-            ${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash', '.github/workflows/containers.yml') }}
-      - name: Check containerfiles are changed
+          key: container-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
+      - name: Check if build is required
         id: check-containerfiles-changed
         run: |
-          if [ '${{ steps.cache-containerfiles-hash.outputs.cache-hit }}' = 'true' ]; then
+          if [ '${{ steps.cache-container.outputs.cache-hit }}' = 'true' ]; then
             echo "changed=false" | tee -a "$GITHUB_OUTPUT"
           else
-            mkdir -p ./tmp
-            touch './tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
             echo "changed=true" | tee -a "$GITHUB_OUTPUT"
           fi
   ubuntu-nix-systemd:
@@ -124,8 +121,10 @@ jobs:
           registry="ghcr.io/${{ github.repository_owner }}"
 
           for tag in $tags; do
+            # Buildah-build creates images in localhost/ by default
+            source_image="localhost/${image_name}:${tag}"
             full_image_name="${registry}/${image_name}:${tag}"
-            podman tag "${image_name}" "${full_image_name}"
+            podman tag "${source_image}" "${full_image_name}"
             # Using --creds to avoid podman login
             # --digestfile is used to capture the digest for the next step
             podman push --creds="${{ github.repository_owner }}:${{ github.token }}" --digestfile=digest.txt "${full_image_name}"
@@ -133,6 +132,12 @@ jobs:
 
           # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
           echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
+      - name: Save container build cache
+        if: steps.push-to-ghcr.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
+          key: container-${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash') }}
       - name: Log outputs
         if: ${{ github.event_name != 'pull_request' }}
         run: echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
