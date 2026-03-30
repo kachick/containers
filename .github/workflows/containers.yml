@@ -70,7 +70,7 @@ jobs:
         with:
           path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
           key: |
-            ${{ hashFiles('**/Containerfile', 'images/**/*.bash') }}
+            ${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash', '.github/workflows/containers.yml') }}
       - name: Check containerfiles are changed
         id: check-containerfiles-changed
         run: |
@@ -83,7 +83,7 @@ jobs:
           fi
   ubuntu-nix-systemd:
     needs: [get-meta]
-    if: needs.get-meta.outputs.container_files_changed == 'true'
+    if: (needs.get-meta.outputs.container_files_changed == 'true') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
