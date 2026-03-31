@@ -110,6 +110,7 @@ jobs:
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
         with:
           image: ubuntu-24.04-nix-systemd
+          tags: ${{ needs.get-meta.outputs.ref_tag }}
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
           oci: true
@@ -119,7 +120,7 @@ jobs:
       #     limit-access-to-actor: true
       - name: Inspect the created image
         run: |
-          podman inspect localhost/${{ steps.build-image.outputs.image }}:latest
+          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ github.actor == github.repository_owner }}
@@ -132,7 +133,7 @@ jobs:
 
           for tag in $tags; do
             full_image_name="${registry}/${image_name}:${tag}"
-            podman tag "${image_name}" "${full_image_name}"
+            podman tag "${image_name}:${{ needs.get-meta.outputs.ref_tag }}" "${full_image_name}"
             # Using --creds to avoid podman login
             # --digestfile is used to capture the digest for the next step
             podman push --creds="${{ github.repository_owner }}:${{ github.token }}" --digestfile=digest.txt "${full_image_name}"
