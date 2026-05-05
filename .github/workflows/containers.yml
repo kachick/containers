@@ -103,6 +103,8 @@ jobs:
     steps:
       - name: Install Podman
         uses: redhat-actions/podman-install@0b0ebeccb256851665136971d7782ba7180773df # commit-0b0ebec
+        with:
+          ubuntu-version: '24.04'
       - name: Logging dependency versions
         run: |
           podman version
