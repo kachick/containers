@@ -40,7 +40,7 @@ jobs:
       ref_tag: ${{ steps.tags.outputs.ref }}
       special_tag: ${{ steps.tags.outputs.special }}
       timestamp_tag: ${{ steps.tags.outputs.timestamp }}
-      container_files_changed: ${{ steps.check-containerfiles-changed.outputs.changed }}
+      should_push: ${{ steps.check-should-push.outputs.result }}
     steps:
       - name: Get started timestamp
         id: timestamp
@@ -86,12 +86,16 @@ jobs:
             touch './tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
             echo "changed=true" | tee -a "$GITHUB_OUTPUT"
           fi
+      - name: Check if should push
+        id: check-should-push
+        run: |
+          if [ "${{ (steps.check-containerfiles-changed.outputs.changed == 'true') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging')) }}" = "true" ]; then
+            echo "result=true" | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "result=false" | tee -a "$GITHUB_OUTPUT"
+          fi
   ubuntu-nix-systemd:
     needs: [get-meta]
-    if: >-
-      (needs.get-meta.outputs.container_files_changed == 'true') ||
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
@@ -123,7 +127,7 @@ jobs:
           podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
       - name: Push To ghcr.io
         id: push-to-ghcr
-        if: ${{ github.actor == github.repository_owner }}
+        if: ${{ (github.actor == github.repository_owner) && (needs.get-meta.outputs.should_push == 'true') }}
         run: |
           set -euxo pipefail
 
@@ -142,11 +146,11 @@ jobs:
           # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
           echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
       - name: Log outputs
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ steps.push-to-ghcr.outcome == 'success' }}
         run: echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
       - name: Inspect the package
         id: inspect-package
-        if: ${{ github.actor == github.repository_owner }}
+        if: ${{ steps.push-to-ghcr.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: | #shell
@@ -176,7 +180,7 @@ jobs:
       - name: Prepare git to run gh commands
         uses: actions/checkout@v6
       - name: Post comments
-        if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') }}
+        if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') && (needs.get-meta.outputs.should_push == 'true') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
