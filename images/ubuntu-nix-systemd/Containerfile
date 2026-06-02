@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/buildpack-deps:24.04-scm@sha256:a634c938d7d57791bc3db9c1a83fa9b4fd5c1425525789b939103dab175c23b2
+FROM public.ecr.aws/docker/library/buildpack-deps:24.04-scm@sha256:546beaf92f4dd7a75f182244d3e1504b2c9cf31c1a6aa8fdb56791b3ba08308b
 
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
