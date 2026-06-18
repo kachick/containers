@@ -33,7 +33,7 @@ permissions:
 jobs:
   # podman can handle lowercase. So normalize the outputs
   get-meta:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     outputs:
       started_at: ${{ steps.timestamp.outputs.started_at }}
@@ -96,7 +96,7 @@ jobs:
           fi
   ubuntu-nix-systemd:
     needs: [get-meta]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
@@ -176,7 +176,7 @@ jobs:
 
   announce-staging:
     needs: [get-meta, ubuntu-nix-systemd]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - name: Prepare git to run gh commands
