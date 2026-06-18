@@ -33,4 +33,4 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-inst
 ARG username="user"
 RUN useradd --no-log-init --create-home $username
 
-CMD [ "/bin/systemd", "--system" ]
+CMD [ "/usr/lib/systemd/systemd", "--system" ]
