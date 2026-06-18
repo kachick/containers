@@ -34,7 +34,11 @@ enum Commands {
         reference: String,
 
         /// Override default image path (registry + package)
-        #[arg(long, short, default_value = "ghcr.io/kachick/ubuntu-24.04-nix-systemd")]
+        #[arg(
+            long,
+            short,
+            default_value = "ghcr.io/kachick/ubuntu-26.04-nix-systemd"
+        )]
         image: String,
 
         /// Username for the container
@@ -55,9 +59,7 @@ impl Drop for ContainerGuard {
     fn drop(&mut self) {
         if !self.id.is_empty() {
             println!("Stopping container {}...", self.id);
-            let _ = Command::new("podman")
-                .args(["stop", &self.id])
-                .status();
+            let _ = Command::new("podman").args(["stop", &self.id]).status();
         }
     }
 }
@@ -69,7 +71,12 @@ fn main() -> Result<()> {
         Commands::Build { image, user } => {
             run_build(image, user)?;
         }
-        Commands::Pull { reference, image, user, skip_pull } => {
+        Commands::Pull {
+            reference,
+            image,
+            user,
+            skip_pull,
+        } => {
             run_pull(reference, image, user, *skip_pull)?;
         }
     }
@@ -119,7 +126,10 @@ fn run_pull(reference: &str, default_image: &str, user: &str, skip_pull: bool) -
         if image_exists(&full_image)? {
             println!("Image {} found locally, skipping pull", full_image);
         } else {
-            anyhow::bail!("Image {} not found locally and --skip-pull specified", full_image);
+            anyhow::bail!(
+                "Image {} not found locally and --skip-pull specified",
+                full_image
+            );
         }
     } else {
         println!("Pulling image: {}", full_image);
@@ -153,7 +163,10 @@ fn start_and_enter_container(image_id: &str, user: &str) -> Result<()> {
         .context("Failed to execute podman run")?;
 
     if !output.status.success() {
-        anyhow::bail!("podman run failed: {}", String::from_utf8_lossy(&output.stderr));
+        anyhow::bail!(
+            "podman run failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
     }
 
     let container_id = String::from_utf8_lossy(&output.stdout).trim().to_string();

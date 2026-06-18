@@ -19,7 +19,7 @@ You can build local images or pull from GHCR and try the shell with the helper t
 nix run github:kachick/containers#systemd-container-shell -- pull
 
 # Equivalent to
-nix run github:kachick/containers#systemd-container-shell -- pull ghcr.io/kachick/ubuntu-24.04-nix-systemd:latest
+nix run github:kachick/containers#systemd-container-shell -- pull ghcr.io/kachick/ubuntu-26.04-nix-systemd:latest
 
 # Pull specific tag
 nix run github:kachick/containers#systemd-container-shell -- pull :20260301-094713-utc

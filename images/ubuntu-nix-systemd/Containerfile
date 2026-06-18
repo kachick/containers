@@ -1,4 +1,6 @@
-FROM public.ecr.aws/docker/library/buildpack-deps:24.04-scm@sha256:f945dcfdb1e77d015c0b397a2e20db2d948a998de5a8478533121d2f44bee88c
+# You can get these digest by using:
+#   podman manifest inspect public.ecr.aws/docker/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
+FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:8c961752e4bcf46087f21e5a032929af7c7088088a21dfb0c511d8c0cc914e27
 
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
@@ -31,4 +33,4 @@ RUN curl --proto '=https' --tlsv1.2 -sSf -L https://artifacts.nixos.org/nix-inst
 ARG username="user"
 RUN useradd --no-log-init --create-home $username
 
-CMD [ "/bin/systemd", "--system" ]
+CMD [ "/usr/lib/systemd/systemd", "--system" ]
