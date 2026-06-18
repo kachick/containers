@@ -37,7 +37,14 @@ jobs:
           extra-conf: |
             sandbox = true
             accept-flake-config = true
+      - name: Install direnv
+        run: |
+          url="$(nix eval --raw --impure --expr '(builtins.fromJSON (builtins.readFile ./flake.lock)).nodes.nixpkgs.locked.url')"
+          nix profile add "${url}#direnv"
+      - name: Load environment variables
+        run: |
+          direnv allow .
+          direnv export gha > "$GITHUB_ENV"
       - run: nix flake check
-      - run: nix develop --command echo 'This step should be done before any other "nix develop" steps because of measuring Nix build time'
-      - run: nix develop --command task check
+      - run: task check
       - run: nix build .#systemd-container-shell

@@ -101,16 +101,30 @@ jobs:
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
-      - name: Install Podman
-        uses: redhat-actions/podman-install@0b0ebeccb256851665136971d7782ba7180773df # commit-0b0ebec
-        with:
-          ubuntu-version: '24.04'
+      - name: Setup requirements for podman via nixpkgs
+        # For detail:
+        # - Don't use redhat-actions/podman-install. See GH-348
+        # - https://github.com/kachick/dotfiles/blob/5858250a6d6aa7e290c825eed5ca7c855ba04020/README.md?plain=1#L138-L144
+        run: |
+          sudo apt-get install --assume-yes uidmap
+      - name: Install Nix
+        uses: NixOS/nix-installer-action@main # There are no tagged releases
+
+      - uses: actions/checkout@v6
+      - name: Install direnv
+        run: |
+          url="$(nix eval --raw --impure --expr '(builtins.fromJSON (builtins.readFile ./flake.lock)).nodes.nixpkgs.locked.url')"
+          nix profile add "${url}#direnv"
+      - name: Load environment variables
+        run: |
+          direnv allow .
+          direnv export gha > "$GITHUB_ENV"
+
       - name: Logging dependency versions
         run: |
           podman version
           crun --version
           buildah version
-      - uses: actions/checkout@v6
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
