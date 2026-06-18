@@ -133,9 +133,7 @@ jobs:
           tags: ${{ needs.get-meta.outputs.ref_tag }}
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
-          extra-args: |
-            --isolation
-            chroot
+          extra-args: --isolation chroot
           oci: true
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
