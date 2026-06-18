@@ -2,6 +2,11 @@
   "json": {},
   "markdown": {},
   "yaml": { "quotes": "preferSingle" },
+  "dockerfile": {
+    "associations": [
+      "Containerfile"
+    ]
+  },
   "excludes": [
     "**/target/**",
     "**/*.lock"
