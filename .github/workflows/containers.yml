@@ -127,6 +127,8 @@ jobs:
           buildah version
       - name: Build Image
         id: build-image
+        # Prefer the runner-provided buildah here because the nixpkgs buildah hits
+        # `Error during unshare(...): Operation not permitted` in GitHub-hosted runners.
         env:
           PATH: /usr/bin:/bin:${{ env.PATH }}
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
