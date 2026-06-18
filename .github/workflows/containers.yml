@@ -101,21 +101,10 @@ jobs:
     outputs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
-      - name: Ensure Podman toolchain is available
-        run: |
-          set -euxo pipefail
-
-          missing_tools=()
-          for tool in podman buildah skopeo crun; do
-            if ! command -v "${tool}" >/dev/null; then
-              missing_tools+=("${tool}")
-            fi
-          done
-
-          if [ "${#missing_tools[@]}" -gt 0 ]; then
-            sudo apt-get update
-            sudo apt-get install -y "${missing_tools[@]}"
-          fi
+      - name: Install Podman
+        uses: redhat-actions/podman-install@aea6ff44f2a4a82da13d22061ce73443a125925d # main
+        with:
+          ubuntu-version: '26.04'
       - name: Logging dependency versions
         run: |
           podman version
