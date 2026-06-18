@@ -27,7 +27,7 @@ enum Commands {
     /// Pull an image from a registry and run it
     Pull {
         /// Image reference or tag.
-        /// If starts with ':', it's a tag for the default image (e.g., :latest, :20260301-094713-utc).
+        /// If starts with ':', it's a tag for the default image (e.g., :latest, :20260618-072235-utc).
         /// If contains '/', it's treated as a full image path.
         /// Otherwise, it's treated as a tag for the default image for convenience.
         #[arg(default_value = ":latest")]

@@ -22,7 +22,7 @@ nix run github:kachick/containers#systemd-container-shell -- pull
 nix run github:kachick/containers#systemd-container-shell -- pull ghcr.io/kachick/ubuntu-26.04-nix-systemd:latest
 
 # Pull specific tag
-nix run github:kachick/containers#systemd-container-shell -- pull :20260301-094713-utc
+nix run github:kachick/containers#systemd-container-shell -- pull :20260618-072235-utc
 
 # Use local image if exists (skip pull checking)
 nix run github:kachick/containers#systemd-container-shell -- pull --skip-pull
