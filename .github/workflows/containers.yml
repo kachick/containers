@@ -102,9 +102,9 @@ jobs:
       package-json: ${{ steps.inspect-package.outputs.json }}
     steps:
       - name: Install Podman
-        uses: redhat-actions/podman-install@0b0ebeccb256851665136971d7782ba7180773df # commit-0b0ebec
+        uses: redhat-actions/podman-install@aea6ff44f2a4a82da13d22061ce73443a125925d # main
         with:
-          ubuntu-version: '24.04'
+          ubuntu-version: '26.04'
       - name: Logging dependency versions
         run: |
           podman version
