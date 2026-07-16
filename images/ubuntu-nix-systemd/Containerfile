@@ -1,6 +1,6 @@
 # You can get these digest by using:
 # podman manifest inspect public.ecr.aws/docker/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
-FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:951794a59697ce8e1ce6a01bada1df0282e24ffdc614edcfdae07708bcfe9516
+FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:ca70bcd515831465bdff6553507622d1b5cd15d4ff6429511fac428552848ebb
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Nix package manager on Ubuntu - systemd"
