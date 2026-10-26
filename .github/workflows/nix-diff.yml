@@ -6,12 +6,19 @@ on:
       - '.github/workflows/nix-diff.yml'
 
 permissions:
-  contents: read
-  pull-requests: write
+  contents: read # For checkout and reusable workflows
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   diff:
-    uses: kachick/workflows/.github/workflows/reusable-nix-diff-closures.yml@main
+    name: ❄️ Diff
+    permissions:
+      contents: read
+      pull-requests: write # Required for commenting closure diffs on PRs
+    uses: kachick/workflows/.github/workflows/reusable-nix-diff-closures.yml@main # zizmor: ignore[unpinned-uses]
     with:
       runs-on: ubuntu-26.04
       targets: |

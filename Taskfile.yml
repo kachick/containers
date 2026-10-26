@@ -24,6 +24,7 @@ tasks:
     cmds:
       - dprint check
       - typos . .github .vscode
+      - zizmor --pedantic .
       - git ls-files '*.nix' | xargs nixfmt --check
       - trivy config --exit-code 1 .
       - git ls-files | xargs nix run github:kachick/selfup/v1.3.1 -- list -check --

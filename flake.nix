@@ -69,6 +69,8 @@
               buildah
               trivy
 
+              zizmor
+
               dprint
               typos
 

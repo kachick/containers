@@ -15,34 +15,50 @@ defaults:
     # https://pubs.opengroup.org/onlinepubs/009695399/utilities/set.html
     shell: bash -Ceuxo pipefail {0}
 
+permissions:
+  contents: read # Required for actions/checkout
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   ghcr:
+    name: ⬢ ghcr
+    permissions:
+      contents: read # Required for actions/checkout
+      pull-requests: write # Required for posting comments to the PR
+      packages: write # Required for deleting staging package versions
     runs-on: ubuntu-26.04
     if: (github.event_name != 'pull_request') || (github.event.pull_request.merged == true)
     timeout-minutes: 15
     steps:
       - name: Get metadata
         id: get-meta
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          INPUT_PR_NUMBER: ${{ inputs.pr-number }}
         run: |
-          if [ '${{ github.event_name }}' == 'pull_request' ]; then
-            echo 'pr_number=${{ github.event.pull_request.number }}' | tee --append "$GITHUB_OUTPUT"
+          if [ "$EVENT_NAME" = 'pull_request' ]; then
+            echo "pr_number=${PR_NUMBER}" | tee --append "$GITHUB_OUTPUT"
           else
-            echo 'pr_number=${{ inputs.pr-number }}' | tee --append "$GITHUB_OUTPUT"
+            echo "pr_number=${INPUT_PR_NUMBER}" | tee --append "$GITHUB_OUTPUT"
           fi
       - name: Inspect the PR published package
         id: inspect-package
+        env:
+          PR_NUMBER: ${{ steps.get-meta.outputs.pr_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: | #shell
           #
           gh api --paginate \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /users/kachick/packages/container/ubuntu-26.04-nix-systemd/versions \
-            --jq '.[] | select(.metadata.container.tags[] | match("^pr-${{ steps.get-meta.outputs.pr_number }}-")).id' | \
+            --jq ".[] | select(.metadata.container.tags[] | match(\"^pr-${PR_NUMBER}-\")).id" | \
               ruby -e 'puts STDIN.each_line.map(&:chomp).join(",")' | \
               xargs --no-run-if-empty --replace='{joined_ids}' echo -n 'ubuntu-nix-systemd-package-version-ids={joined_ids}' | tee --append "$GITHUB_OUTPUT"
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
         if: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
         with:
@@ -53,18 +69,22 @@ jobs:
           package-version-ids: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
       - name: Prepare git to run gh commands
         if: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Post comments to the PR
         if: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
         env:
+          PR_NUMBER: ${{ steps.get-meta.outputs.pr_number }}
+          VERSION_IDS: ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           (
-          cat <<'EOF'
+          cat <<EOF
           🤖 removed 🗑️ staging ⬢ from ghcr.io
 
-          ```plaintext
-          ${{ steps.inspect-package.outputs.ubuntu-nix-systemd-package-version-ids }}
-          ```
+          \`\`\`plaintext
+          ${VERSION_IDS}
+          \`\`\`
           EOF
-          ) | gh pr comment '${{ steps.get-meta.outputs.pr_number }}' --body-file -
+          ) | gh pr comment "${PR_NUMBER}" --body-file -

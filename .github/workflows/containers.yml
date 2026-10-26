@@ -26,13 +26,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pull-requests: write
-  packages: write
+  contents: read # Required for actions/checkout
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   # podman can handle lowercase. So normalize the outputs
   get-meta:
+    name: 📋 Meta
     runs-on: ubuntu-26.04
     timeout-minutes: 5
     outputs:
@@ -50,51 +53,43 @@ jobs:
       - name: Generate tags for the image
         id: tags
         # https://github.com/orgs/community/discussions/26557#discussioncomment-3252327
+        env:
+          STARTED_AT: ${{ steps.timestamp.outputs.started_at }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PR_NUMBER: ${{ github.event.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
-          echo "timestamp=${{ steps.timestamp.outputs.started_at }}" | tee -a "$GITHUB_OUTPUT"
+          echo "timestamp=${STARTED_AT}" | tee -a "$GITHUB_OUTPUT"
 
           special=''
           ref=''
 
-          if [ '${{ github.event_name }}' = 'pull_request' ]; then
-            special='pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}'
-            ref='${{ github.event.pull_request.head.sha }}'
-          elif [ '${{ github.ref_name }}' = '${{ github.event.repository.default_branch }}' ]; then
+          if [ "$EVENT_NAME" = 'pull_request' ]; then
+            special="pr-${PR_NUMBER}-${PR_HEAD_SHA}"
+            ref="$PR_HEAD_SHA"
+          elif [ "$REF_NAME" = "$DEFAULT_BRANCH" ]; then
             special='latest'
-            ref='${{ github.sha }}'
+            ref="$GITHUB_SHA"
           else
             exit 1
           fi
 
           echo "special=${special}" | tee -a "$GITHUB_OUTPUT"
           echo "ref=${ref}" | tee -a "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v7
-      - name: Memorize container hash
-        id: cache-containerfiles-hash
-        uses: actions/cache@v6
-        with:
-          path: 'tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
-          key: |
-            ${{ hashFiles('**/Containerfile', '.containerignore', 'images/**/*.bash', '.github/workflows/containers.yml') }}
-      - name: Check containerfiles are changed
-        id: check-containerfiles-changed
-        run: |
-          if [ '${{ steps.cache-containerfiles-hash.outputs.cache-hit }}' = 'true' ]; then
-            echo "changed=false" | tee -a "$GITHUB_OUTPUT"
-          else
-            mkdir -p ./tmp
-            touch './tmp/this_file_is_only_provided_for_use_of_github_actions_cache'
-            echo "changed=true" | tee -a "$GITHUB_OUTPUT"
-          fi
       - name: Check if should push
         id: check-should-push
+        env:
+          SHOULD_PUSH: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging')) }}
         run: |
-          if [ "${{ (steps.check-containerfiles-changed.outputs.changed == 'true') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging')) }}" = "true" ]; then
-            echo "result=true" | tee -a "$GITHUB_OUTPUT"
-          else
-            echo "result=false" | tee -a "$GITHUB_OUTPUT"
-          fi
+          echo "result=${SHOULD_PUSH}" | tee -a "$GITHUB_OUTPUT"
   ubuntu-nix-systemd:
+    name: 📦 ubuntu-nix-systemd
+    permissions:
+      contents: read
+      packages: write # Required for pushing container images to GHCR
     needs: [get-meta]
     runs-on: ubuntu-26.04
     timeout-minutes: 30
@@ -106,10 +101,12 @@ jobs:
           podman version
           crun --version
           buildah version
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Build Image
         id: build-image
-        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 #v3.1.0
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ubuntu-26.04-nix-systemd
           tags: ${{ needs.get-meta.outputs.ref_tag }}
@@ -121,41 +118,52 @@ jobs:
       #   with:
       #     limit-access-to-actor: true
       - name: Inspect the created image
+        env:
+          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
         run: |
-          podman inspect localhost/${{ steps.build-image.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
+          podman inspect "localhost/${IMAGE_NAME}:${REF_TAG}"
       - name: Push To ghcr.io
         id: push-to-ghcr
         if: ${{ (github.actor == github.repository_owner) && (needs.get-meta.outputs.should_push == 'true') }}
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ github.token }}
+          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
+          SPECIAL_TAG: ${{ needs.get-meta.outputs.special_tag }}
+          TIMESTAMP_TAG: ${{ needs.get-meta.outputs.timestamp_tag }}
         run: |
           set -euxo pipefail
 
-          image_name="${{ steps.build-image.outputs.image }}"
-          tags="${{ needs.get-meta.outputs.special_tag }} ${{ needs.get-meta.outputs.ref_tag }} ${{ needs.get-meta.outputs.timestamp_tag }}"
-          registry="ghcr.io/${{ github.repository_owner }}"
+          tags="${SPECIAL_TAG} ${REF_TAG} ${TIMESTAMP_TAG}"
+          registry="ghcr.io/${REPOSITORY_OWNER}"
 
           for tag in $tags; do
-            full_image_name="${registry}/${image_name}:${tag}"
-            podman tag "${image_name}:${{ needs.get-meta.outputs.ref_tag }}" "${full_image_name}"
+            full_image_name="${registry}/${IMAGE_NAME}:${tag}"
+            podman tag "${IMAGE_NAME}:${REF_TAG}" "${full_image_name}"
             # Using --creds to avoid podman login
             # --digestfile is used to capture the digest for the next step
-            podman push --creds="${{ github.repository_owner }}:${{ github.token }}" --digestfile=digest.txt "${full_image_name}"
+            podman push --creds="${REPOSITORY_OWNER}:${GITHUB_TOKEN}" --digestfile=digest.txt "${full_image_name}"
           done
 
           # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
           echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
       - name: Log outputs
         if: ${{ steps.push-to-ghcr.outcome == 'success' }}
-        run: echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
+        env:
+          OUTPUTS_JSON: ${{ toJSON(steps.push-to-ghcr.outputs) }}
+        run: echo "${OUTPUTS_JSON}"
       - name: Inspect the package
         id: inspect-package
         if: ${{ steps.push-to-ghcr.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          DIGEST: ${{ steps.push-to-ghcr.outputs.digest }}
         run: | #shell
           #
           set -euxo pipefail
-
-          echo "${{ toJSON(steps.push-to-ghcr.outputs) }}"
 
           {
             echo 'json<<JSON'
@@ -163,37 +171,49 @@ jobs:
             gh api --paginate \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            /users/${{ github.repository_owner }}/packages/container/ubuntu-26.04-nix-systemd/versions \
-            --jq '.[] | select(.name == "${{ steps.push-to-ghcr.outputs.digest }}")' | \
+            "/users/${REPOSITORY_OWNER}/packages/container/ubuntu-26.04-nix-systemd/versions" \
+            --jq ".[] | select(.name == \"${DIGEST}\")" | \
               jq
 
             echo 'JSON'
           } | tee --append "$GITHUB_OUTPUT"
 
   announce-staging:
+    name: 📢 announce-staging
+    permissions:
+      contents: read
+      pull-requests: write # Required for posting deploy comments
     needs: [get-meta, ubuntu-nix-systemd]
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - name: Prepare git to run gh commands
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Post comments
         if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') && (needs.get-meta.outputs.should_push == 'true') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.number }}
+          SPECIAL_TAG: ${{ needs.get-meta.outputs.special_tag }}
+          PACKAGE_JSON: ${{ needs.ubuntu-nix-systemd.outputs.package-json }}
         run: |
+          package_id="$(echo "$PACKAGE_JSON" | jq -r '.id')"
           (
-          cat <<'EOF'
+          cat <<EOF
           ⬢🦭 Staging container-image has been deployed 🚀
 
           You can test the interactive shell 🐚 as follows.
 
-          ```bash
-          nix run github:${{ github.repository }}/${{ github.event.pull_request.head.sha }}#systemd-container-shell -- pull ${{ github.event.pull_request.head.sha }}
-          ```
+          \`\`\`bash
+          nix run github:${REPOSITORY}/${PR_HEAD_SHA}#systemd-container-shell -- pull ${PR_HEAD_SHA}
+          \`\`\`
 
-          [Package detail](https://github.com/${{ github.repository }}/pkgs/container/ubuntu-26.04-nix-systemd/${{ fromJson(needs.ubuntu-nix-systemd.outputs.package-json).id }}?tag=${{ needs.get-meta.outputs.special_tag }})
+          [Package detail](https://github.com/${REPOSITORY}/pkgs/container/ubuntu-26.04-nix-systemd/${package_id}?tag=${SPECIAL_TAG})
 
           This image will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
           EOF
-          ) | gh pr comment ${{ github.event.number }} --body-file -
+          ) | gh pr comment "${PR_NUMBER}" --body-file -

@@ -4,11 +4,11 @@ updates:
     directory: '/'
     schedule:
       interval: 'monthly'
-    ignore:
-      - dependency-name: 'crate-ci/typos'
+    cooldown:
+      default-days: 7
   - package-ecosystem: 'cargo'
     directory: '/systemd-container-shell'
     schedule:
       interval: 'weekly'
     cooldown:
-      default-days: 3
+      default-days: 7
