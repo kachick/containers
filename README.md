@@ -1,6 +1,6 @@
 # Containerfile(s)
 
-[![CI - Nix Status](https://github.com/kachick/containers/actions/workflows/ci-nix.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci-nix.yml?query=branch%3Amain+)
+[![CI Status](https://github.com/kachick/containers/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/ci.yml?query=branch%3Amain+)
 [![CI - Container Status](https://github.com/kachick/containers/actions/workflows/containers.yml/badge.svg?branch=main)](https://github.com/kachick/containers/actions/workflows/containers.yml?query=branch%3Amain+)
 
 ## Container Images
