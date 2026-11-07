@@ -28,7 +28,6 @@ tasks:
       - zizmor --pedantic .
       - git ls-files '*.nix' | xargs nixfmt --check
       - trivy config --exit-code 1 .
-      - git ls-files | xargs nix run github:kachick/selfup/v1.3.1 -- list -check --
       - cargo clippy --manifest-path systemd-container-shell/Cargo.toml -- -D warnings
   try:
     cmds:
@@ -41,6 +40,3 @@ tasks:
     cmds:
       - task: try
         vars: { CLI_ARGS: "pull {{.TAG | default \"latest\"}}" }
-  selfup:
-    cmds:
-      - git ls-files | xargs nix run github:kachick/selfup/v1.3.1 -- run --

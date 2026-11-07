@@ -85,6 +85,16 @@ jobs:
           SHOULD_PUSH: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'deploy-staging')) }}
         run: |
           echo "result=${SHOULD_PUSH}" | tee -a "$GITHUB_OUTPUT"
+  minimize-old-comments:
+    needs: [get-meta]
+    if: ${{ (github.actor == github.repository_owner) && (github.event_name == 'pull_request') && (needs.get-meta.outputs.should_push == 'true') }}
+    permissions:
+      contents: read # Required for actions/checkout in reusable workflow
+      pull-requests: write # Required for minimizing outdated PR comments
+    uses: kachick/workflows/.github/workflows/reusable-minimize-pr-comments.yml@main # zizmor: ignore[unpinned-uses]
+    with:
+      pr-number: ${{ github.event_name == 'pull_request' && github.event.number || 0 }}
+      body-includes: 'systemd-container-shell'
   ubuntu-nix-systemd:
     name: 📦 ubuntu-nix-systemd
     permissions:
@@ -217,3 +227,17 @@ jobs:
           This image will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
           EOF
           ) | gh pr comment "${PR_NUMBER}" --body-file -
+
+  remove-old-images:
+    needs: [get-meta, ubuntu-nix-systemd]
+    if: >-
+      always() &&
+      (needs.ubuntu-nix-systemd.result == 'success') &&
+      (github.actor == github.repository_owner) &&
+      (needs.get-meta.outputs.should_push == 'true')
+    permissions:
+      packages: write # Required for deleting old GHCR package versions
+    uses: kachick/workflows/.github/workflows/reusable-cleanup-ghcr.yml@main # zizmor: ignore[unpinned-uses]
+    with:
+      package-name: ubuntu-26.04-nix-systemd
+      keep-latest-items: 50
