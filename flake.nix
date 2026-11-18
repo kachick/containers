@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     cntr = {
       url = "github:Mic92/cntr/2.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,7 +17,12 @@
     }:
     let
       inherit (nixpkgs) lib;
-      forAllSystems = lib.genAttrs lib.systems.flakeExposed;
+      forAllSystems = lib.genAttrs (
+        lib.intersectLists [
+          "x86_64-linux"
+          "aarch64-linux"
+        ] lib.systems.flakeExposed
+      );
     in
     {
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
@@ -88,11 +93,9 @@
                 rustfmt
                 clippy
               ])
-              ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux (
-                import ./nix/cntr.nix {
-                  inherit pkgs cntr;
-                }
-              );
+              ++ (import ./nix/cntr.nix {
+                inherit pkgs cntr;
+              });
           };
         }
       );
