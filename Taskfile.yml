@@ -19,14 +19,12 @@ tasks:
   fmt:
     cmds:
       - dprint fmt
-      - git ls-files '*.nix' | xargs nixfmt
       - cargo fmt --manifest-path systemd-container-shell/Cargo.toml
   lint:
     cmds:
       - dprint check
       - typos . .github .vscode
       - zizmor --pedantic .
-      - git ls-files '*.nix' | xargs nixfmt --check
       - trivy config --exit-code 1 .
       - cargo clippy --manifest-path systemd-container-shell/Cargo.toml -- -D warnings
   try:

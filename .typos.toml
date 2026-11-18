@@ -1,6 +1,6 @@
 [files]
 extend-exclude = [
-    "target",
-    "Cargo.lock",
-    "flake.lock"
+  "target",
+  "Cargo.lock",
+  "flake.lock",
 ]

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://dprint.dev/schemas/v0.json",
+  "json": {
+    "trailingCommas": "never"
+  },
+  "yaml": {
+    "quotes": "preferSingle",
+    "trimTrailingWhitespaces": false
+  },
+  "toml": {
+    "quoteStyle": "maintain"
+  },
+  "dockerfile": {
+    "associations": [
+      "Containerfile"
+    ]
+  },
+  "plugins": [
+    "npm:@dprint/json@0.26.0",
+    "npm:@dprint/markdown@0.29.0",
+    "npm:@dprint/toml@0.10.0",
+    "npm:dprint-plugin-yaml@0.6.0",
+    "npm:@dprint/nix@0.2.0",
+    "npm:@dprint/dockerfile@0.8.0"
+  ]
+}
