@@ -4,7 +4,20 @@
     "github>kachick/renovate-config//presets/default.jsonc",
     "github>kachick/renovate-config//presets/cargo.jsonc"
   ],
+  "nix": {
+    "enabled": true
+  },
   "packageRules": [
+    {
+      "description": "Keep channel-tracking flake inputs fixed to current release series",
+      "matchManagers": [
+        "nix"
+      ],
+      "matchPackageNames": [
+        "nixpkgs"
+      ],
+      "enabled": false
+    },
     {
       "matchManagers": [
         "dockerfile"

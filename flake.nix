@@ -1,12 +1,19 @@
 {
   inputs = {
     nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.zst";
+    cntr = {
+      url = "github:Mic92/cntr/2.1.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "";
+      inputs.fenix.follows = "";
+    };
   };
 
   outputs =
     {
       self,
       nixpkgs,
+      cntr,
     }:
     let
       inherit (nixpkgs) lib;
@@ -55,31 +62,37 @@
               RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
             };
 
-            buildInputs = with pkgs; [
-              bashInteractive
-              findutils # xargs
-              nixfmt
-              nixfmt-tree
-              nixd
-              go-task
+            buildInputs =
+              (with pkgs; [
+                bashInteractive
+                findutils # xargs
+                nixfmt
+                nixfmt-tree
+                nixd
+                go-task
 
-              shfmt
-              shellcheck
+                shfmt
+                shellcheck
 
-              buildah
-              trivy
+                buildah
+                trivy
 
-              zizmor
+                zizmor
 
-              dprint
-              typos
+                dprint
+                typos
 
-              rustc
-              cargo
-              rust-analyzer
-              rustfmt
-              clippy
-            ];
+                rustc
+                cargo
+                rust-analyzer
+                rustfmt
+                clippy
+              ])
+              ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux (
+                import ./nix/cntr.nix {
+                  inherit pkgs cntr;
+                }
+              );
           };
         }
       );
