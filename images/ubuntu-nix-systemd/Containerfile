@@ -1,4 +1,5 @@
-ARG BASE_IMAGE=localhost/ubuntu-systemd:26.04
+# Require BASE_IMAGE via --build-arg instead of a localhost default so Renovate does not try to look up a local image
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
