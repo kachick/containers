@@ -1,6 +1,6 @@
 # You can get these digest by using:
 # podman manifest inspect public.ecr.aws/docker/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
-FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:94fb43e4b298af21cdecc40f1f1bb41d9ac13606eaedce7009c889ff43912aa9
+FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:26f95adbbdd981911e1ad45362d680a32ec5def1acc36b16e5c22102790dcccb
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Ubuntu 26.04 with systemd"
