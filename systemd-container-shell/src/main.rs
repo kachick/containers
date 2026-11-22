@@ -84,26 +84,52 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn run_build(image: &str, user: &str) -> Result<()> {
-    println!("Building image: {} for user: {}", image, user);
+fn build_image(tag: &str, containerfile: &str, build_args: &[String]) -> Result<()> {
+    let mut args = vec![
+        "build".to_string(),
+        "--tag".to_string(),
+        tag.to_string(),
+        "--file".to_string(),
+        containerfile.to_string(),
+    ];
+    for arg in build_args {
+        args.push("--build-arg".to_string());
+        args.push(arg.clone());
+    }
+    args.push(".".to_string());
 
     let status = Command::new("podman")
-        .args([
-            "build",
-            "--tag",
-            image,
-            "--build-arg",
-            &format!("username={}", user),
-            "--file",
-            &format!("./images/{}/Containerfile", image),
-            ".",
-        ])
+        .args(&args)
         .status()
         .context("Failed to execute podman build")?;
 
     if !status.success() {
-        anyhow::bail!("podman build failed");
+        anyhow::bail!("podman build failed for {}", tag);
     }
+
+    Ok(())
+}
+
+fn run_build(image: &str, user: &str) -> Result<()> {
+    println!("Building image: {} for user: {}", image, user);
+
+    let mut build_args = vec![format!("username={}", user)];
+    if image == "ubuntu-nix-systemd" {
+        let base_tag = "localhost/ubuntu-systemd:26.04";
+        println!("Building base image: {}", base_tag);
+        build_image(
+            base_tag,
+            "./images/ubuntu-systemd/Containerfile",
+            &build_args,
+        )?;
+        build_args = vec![format!("BASE_IMAGE={}", base_tag)];
+    }
+
+    build_image(
+        image,
+        &format!("./images/{}/Containerfile", image),
+        &build_args,
+    )?;
 
     start_and_enter_container(image, user)
 }

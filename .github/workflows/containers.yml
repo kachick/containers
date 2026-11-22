@@ -95,8 +95,8 @@ jobs:
     with:
       pr-number: ${{ github.event_name == 'pull_request' && github.event.number || 0 }}
       body-includes: 'systemd-container-shell'
-  ubuntu-nix-systemd:
-    name: 📦 ubuntu-nix-systemd
+  build-images:
+    name: 📦 Build Images
     permissions:
       contents: read
       packages: write # Required for pushing container images to GHCR
@@ -104,7 +104,8 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     outputs:
-      package-json: ${{ steps.inspect-package.outputs.json }}
+      systemd-package-json: ${{ steps.inspect-systemd-package.outputs.json }}
+      nix-systemd-package-json: ${{ steps.inspect-nix-systemd-package.outputs.json }}
     steps:
       - name: Logging dependency versions
         run: |
@@ -114,32 +115,95 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Build Image
-        id: build-image
+      - name: Build ubuntu-systemd
+        id: build-systemd
+        uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
+        with:
+          image: ubuntu-26.04-systemd
+          tags: ${{ needs.get-meta.outputs.ref_tag }}
+          containerfiles: |
+            ./images/ubuntu-systemd/Containerfile
+          oci: true
+      - name: Inspect ubuntu-systemd
+        env:
+          IMAGE_NAME: ${{ steps.build-systemd.outputs.image }}
+          REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
+        run: |
+          podman inspect "localhost/${IMAGE_NAME}:${REF_TAG}"
+      - name: Push ubuntu-systemd to ghcr.io
+        id: push-systemd-to-ghcr
+        if: ${{ (github.actor == github.repository_owner) && (needs.get-meta.outputs.should_push == 'true') }}
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ github.token }}
+          IMAGE_NAME: ${{ steps.build-systemd.outputs.image }}
+          REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
+          SPECIAL_TAG: ${{ needs.get-meta.outputs.special_tag }}
+          TIMESTAMP_TAG: ${{ needs.get-meta.outputs.timestamp_tag }}
+        run: |
+          set -euxo pipefail
+
+          tags="${SPECIAL_TAG} ${REF_TAG} ${TIMESTAMP_TAG}"
+          registry="ghcr.io/${REPOSITORY_OWNER}"
+
+          for tag in $tags; do
+            full_image_name="${registry}/${IMAGE_NAME}:${tag}"
+            podman tag "${IMAGE_NAME}:${REF_TAG}" "${full_image_name}"
+            podman push --creds="${REPOSITORY_OWNER}:${GITHUB_TOKEN}" --digestfile=digest-systemd.txt "${full_image_name}"
+          done
+
+          echo "digest=$(cat digest-systemd.txt)" >> "$GITHUB_OUTPUT"
+      - name: Inspect ubuntu-systemd package
+        id: inspect-systemd-package
+        if: ${{ steps.push-systemd-to-ghcr.outcome == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          DIGEST: ${{ steps.push-systemd-to-ghcr.outputs.digest }}
+        run: | #shell
+          #
+          set -euxo pipefail
+
+          {
+            echo 'json<<JSON'
+
+            gh api --paginate \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/users/${REPOSITORY_OWNER}/packages/container/ubuntu-26.04-systemd/versions" \
+            --jq ".[] | select(.name == \"${DIGEST}\")" | \
+              jq
+
+            echo 'JSON'
+          } | tee --append "$GITHUB_OUTPUT"
+      - name: Build ubuntu-nix-systemd
+        id: build-nix-systemd
         uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
         with:
           image: ubuntu-26.04-nix-systemd
           tags: ${{ needs.get-meta.outputs.ref_tag }}
           containerfiles: |
             ./images/ubuntu-nix-systemd/Containerfile
+          build-args: |
+            BASE_IMAGE=localhost/${{ steps.build-systemd.outputs.image }}:${{ needs.get-meta.outputs.ref_tag }}
           oci: true
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
       #   with:
       #     limit-access-to-actor: true
-      - name: Inspect the created image
+      - name: Inspect ubuntu-nix-systemd
         env:
-          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          IMAGE_NAME: ${{ steps.build-nix-systemd.outputs.image }}
           REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
         run: |
           podman inspect "localhost/${IMAGE_NAME}:${REF_TAG}"
-      - name: Push To ghcr.io
-        id: push-to-ghcr
+      - name: Push ubuntu-nix-systemd to ghcr.io
+        id: push-nix-systemd-to-ghcr
         if: ${{ (github.actor == github.repository_owner) && (needs.get-meta.outputs.should_push == 'true') }}
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ github.token }}
-          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          IMAGE_NAME: ${{ steps.build-nix-systemd.outputs.image }}
           REF_TAG: ${{ needs.get-meta.outputs.ref_tag }}
           SPECIAL_TAG: ${{ needs.get-meta.outputs.special_tag }}
           TIMESTAMP_TAG: ${{ needs.get-meta.outputs.timestamp_tag }}
@@ -160,17 +224,17 @@ jobs:
           # Capture the digest of the last pushed tag (they should all have the same digest since they are the same image)
           echo "digest=$(cat digest.txt)" >> "$GITHUB_OUTPUT"
       - name: Log outputs
-        if: ${{ steps.push-to-ghcr.outcome == 'success' }}
+        if: ${{ steps.push-nix-systemd-to-ghcr.outcome == 'success' }}
         env:
-          OUTPUTS_JSON: ${{ toJSON(steps.push-to-ghcr.outputs) }}
+          OUTPUTS_JSON: ${{ toJSON(steps.push-nix-systemd-to-ghcr.outputs) }}
         run: echo "${OUTPUTS_JSON}"
-      - name: Inspect the package
-        id: inspect-package
-        if: ${{ steps.push-to-ghcr.outcome == 'success' }}
+      - name: Inspect ubuntu-nix-systemd package
+        id: inspect-nix-systemd-package
+        if: ${{ steps.push-nix-systemd-to-ghcr.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPOSITORY_OWNER: ${{ github.repository_owner }}
-          DIGEST: ${{ steps.push-to-ghcr.outputs.digest }}
+          DIGEST: ${{ steps.push-nix-systemd-to-ghcr.outputs.digest }}
         run: | #shell
           #
           set -euxo pipefail
@@ -193,7 +257,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # Required for posting deploy comments
-    needs: [get-meta, ubuntu-nix-systemd]
+    needs: [get-meta, build-images]
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
@@ -209,12 +273,14 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.number }}
           SPECIAL_TAG: ${{ needs.get-meta.outputs.special_tag }}
-          PACKAGE_JSON: ${{ needs.ubuntu-nix-systemd.outputs.package-json }}
+          SYSTEMD_PACKAGE_JSON: ${{ needs.build-images.outputs.systemd-package-json }}
+          NIX_SYSTEMD_PACKAGE_JSON: ${{ needs.build-images.outputs.nix-systemd-package-json }}
         run: |
-          package_id="$(echo "$PACKAGE_JSON" | jq -r '.id')"
+          systemd_package_id="$(echo "$SYSTEMD_PACKAGE_JSON" | jq -r '.id')"
+          nix_systemd_package_id="$(echo "$NIX_SYSTEMD_PACKAGE_JSON" | jq -r '.id')"
           (
           cat <<EOF
-          ⬢🦭 Staging container-image has been deployed 🚀
+          ⬢🦭 Staging container-images have been deployed 🚀
 
           You can test the interactive shell 🐚 as follows.
 
@@ -222,22 +288,29 @@ jobs:
           nix run github:${REPOSITORY}/${PR_HEAD_SHA}#systemd-container-shell -- pull ${PR_HEAD_SHA}
           \`\`\`
 
-          [Package detail](https://github.com/${REPOSITORY}/pkgs/container/ubuntu-26.04-nix-systemd/${package_id}?tag=${SPECIAL_TAG})
+          - [ubuntu-26.04-systemd](https://github.com/${REPOSITORY}/pkgs/container/ubuntu-26.04-systemd/${systemd_package_id}?tag=${SPECIAL_TAG})
+          - [ubuntu-26.04-nix-systemd](https://github.com/${REPOSITORY}/pkgs/container/ubuntu-26.04-nix-systemd/${nix_systemd_package_id}?tag=${SPECIAL_TAG})
 
-          This image will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
+          These images will be automatically 🤖 removed from ghcr.io 🗑️ if you merged/closed this PR 😌
           EOF
           ) | gh pr comment "${PR_NUMBER}" --body-file -
 
   remove-old-images:
-    needs: [get-meta, ubuntu-nix-systemd]
+    needs: [get-meta, build-images]
     if: >-
       always() &&
-      (needs.ubuntu-nix-systemd.result == 'success') &&
+      (needs.build-images.result == 'success') &&
       (github.actor == github.repository_owner) &&
       (needs.get-meta.outputs.should_push == 'true')
+    strategy:
+      fail-fast: false
+      matrix:
+        package-name:
+          - ubuntu-26.04-systemd
+          - ubuntu-26.04-nix-systemd
     permissions:
       packages: write # Required for deleting old GHCR package versions
     uses: kachick/workflows/.github/workflows/reusable-cleanup-ghcr.yml@main # zizmor: ignore[unpinned-uses]
     with:
-      package-name: ubuntu-26.04-nix-systemd
+      package-name: ${{ matrix.package-name }}
       keep-latest-items: 50

@@ -5,9 +5,10 @@
 
 ## Container Images
 
-| Name                                            | Build in local               | Examples                                                                                                    |
-| ----------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task try:systemd USER=user` | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
+| Name                                            | Build in local                     | Examples                                                                                                    |
+| ----------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [ubuntu-systemd](images/ubuntu-systemd)         | `task try -- build ubuntu-systemd` | [dotfiles](https://github.com/kachick/dotfiles/blob/main/containers/layered-image.nix)                      |
+| [ubuntu-nix-systemd](images/ubuntu-nix-systemd) | `task systemd:try`                 | [dotfiles](https://github.com/kachick/dotfiles/blob/f81983534aeb9f0db80932f5ae73bd59793b8af4/README.md#L47) |
 
 ## Usage
 

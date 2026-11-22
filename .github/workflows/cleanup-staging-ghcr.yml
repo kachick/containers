@@ -22,14 +22,20 @@ concurrency:
 
 jobs:
   cleanup:
-    name: 🗑️ Staging
+    name: 🗑️ Staging (${{ matrix.package-name }})
     if: (github.event_name != 'pull_request') || (github.event.pull_request.merged == true)
+    strategy:
+      fail-fast: false
+      matrix:
+        package-name:
+          - ubuntu-26.04-systemd
+          - ubuntu-26.04-nix-systemd
     permissions:
       contents: read # Required for actions/checkout in reusable workflow
       pull-requests: write # Required for minimizing outdated comments and posting result
       packages: write # Required for deleting staging package versions
     uses: kachick/workflows/.github/workflows/reusable-cleanup-ghcr-staging.yml@main # zizmor: ignore[unpinned-uses]
     with:
-      package-name: ubuntu-26.04-nix-systemd
+      package-name: ${{ matrix.package-name }}
       pr-number: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || inputs.pr-number }}
       body-includes: 'systemd-container-shell'

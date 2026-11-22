@@ -1,0 +1,19 @@
+# You can get these digest by using:
+# podman manifest inspect public.ecr.aws/docker/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
+FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:94fb43e4b298af21cdecc40f1f1bb41d9ac13606eaedce7009c889ff43912aa9
+
+LABEL org.opencontainers.image.source=https://github.com/kachick/containers
+LABEL org.opencontainers.image.description="Ubuntu 26.04 with systemd"
+LABEL org.opencontainers.image.licenses=MIT
+
+# Available versions in apt: https://packages.ubuntu.com/noble/curl
+# --no-install-recommends omits ca-certificates
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y systemd \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+ARG username="user"
+RUN useradd --no-log-init --create-home "$username"
+
+CMD ["/usr/lib/systemd/systemd", "--system"]
