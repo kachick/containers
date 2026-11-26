@@ -53,9 +53,14 @@ jobs:
             access-tokens = github.com=${{ github.token }}
             extra-substituters = https://kachick.cachix.org
             extra-trusted-public-keys = kachick.cachix.org-1:7giZGKW03gPFkbde09JNpDKCbDGGwBuU/Z11W/jUtEQ=
+      - name: Install direnv
+        run: nix profile add --inputs-from . nixpkgs#direnv
+      - name: Load environment variables
+        run: |
+          direnv allow .
+          direnv export gha > "$GITHUB_ENV"
       - run: nix flake check
-      - run: nix develop --command echo 'This step should be done before any other "nix develop" steps because of measuring Nix build time'
-      - run: nix develop --command task check
+      - run: task check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: nix build .#systemd-container-shell
