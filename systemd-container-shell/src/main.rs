@@ -21,7 +21,7 @@ enum Commands {
         image: String,
 
         /// Username for the container
-        #[arg(long, default_value = "user")]
+        #[arg(long, default_value = "visitor")]
         user: String,
     },
     /// Pull an image from a registry and run it
@@ -42,7 +42,7 @@ enum Commands {
         image: String,
 
         /// Username for the container
-        #[arg(long, default_value = "user")]
+        #[arg(long, default_value = "visitor")]
         user: String,
 
         /// Skip pulling and use local image if it exists, fail if not found

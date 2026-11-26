@@ -1,6 +1,6 @@
 # Ubuntu - systemd
 
-Base Ubuntu 26.04 image with `systemd` and a non-root `user` account, without Nix pre-installed.
+Base Ubuntu 26.04 image with `systemd` and a non-root `visitor` account, without Nix pre-installed.
 Used as the base for [ubuntu-nix-systemd](../ubuntu-nix-systemd) and layered Nix images that provide their own Nix store and daemon config.
 
 ## Usage

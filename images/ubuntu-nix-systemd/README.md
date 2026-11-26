@@ -18,16 +18,16 @@ nix run github:kachick/containers#systemd-container-shell -- pull --skip-pull
 Make sure non root and non sudoers can run nix features
 
 ```console
-user@541fad9ac911:/$ nix --version
+visitor@541fad9ac911:/$ nix --version
 nix (Nix) 2.20.3
-user@541fad9ac911:/$ nix run nixpkgs#hello
+visitor@541fad9ac911:/$ nix run nixpkgs#hello
 Hello, world!
-user@541fad9ac911:/$ ps -ef | grep systemd
+visitor@541fad9ac911:/$ ps -ef | grep systemd
 root           1       0  0 10:53 ?        00:00:00 /bin/systemd --system
 root          15       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-journald
 systemd+      22       1  0 10:53 ?        00:00:00 /lib/systemd/systemd-resolved
-user         770      26  0 10:55 pts/0    00:00:00 grep --color=auto systemd
-user@541fad9ac911:/$ sudo
+visitor      770      26  0 10:55 pts/0    00:00:00 grep --color=auto systemd
+visitor@541fad9ac911:/$ sudo
 bash: sudo: command not found
 ```
 
