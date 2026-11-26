@@ -38,6 +38,9 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          cntrPackages = import ./nix/cntr.nix {
+            inherit pkgs cntr;
+          };
         in
         {
           systemd-container-shell = pkgs.rustPlatform.buildRustPackage {
@@ -57,6 +60,7 @@
               mainProgram = "systemd-container-shell";
             };
           };
+          inherit (cntrPackages) cntr podman-cntr;
           default = self.packages.${system}.systemd-container-shell;
         }
       );
@@ -98,9 +102,10 @@
                 rustfmt
                 clippy
               ])
-              ++ (import ./nix/cntr.nix {
-                inherit pkgs cntr;
-              });
+              ++ [
+                self.packages.${system}.cntr
+                self.packages.${system}.podman-cntr
+              ];
           };
         }
       );

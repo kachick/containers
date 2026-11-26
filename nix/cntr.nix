@@ -81,7 +81,7 @@ let
     meta.description = "Attach to rootless podman containers using cntr";
   };
 in
-[
-  cntrPkg
-  podmanCntr
-]
+{
+  cntr = cntrPkg;
+  podman-cntr = podmanCntr;
+}
