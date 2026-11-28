@@ -20,13 +20,18 @@ tasks:
   fmt:
     cmds:
       - dprint fmt
-      - gofmt -w systemd-container-shell
+      - gofmt -s -w systemd-container-shell
+  fix:
+    dir: systemd-container-shell
+    cmds:
+      - go fix ./...
   lint-go:
     internal: true
     dir: systemd-container-shell
     cmds:
-      - test -z "$(gofmt -l .)"
+      - test -z "$(gofmt -s -l .)"
       - go vet ./...
+      - go fix -diff ./...
   lint:
     deps:
       - task: lint-go

@@ -71,8 +71,7 @@ func defaultEnv() env {
 			if err == nil {
 				return true, nil
 			}
-			var exitErr *exec.ExitError
-			if errors.As(err, &exitErr) {
+			if _, ok := errors.AsType[*exec.ExitError](err); ok {
 				return false, nil
 			}
 			return false, err
