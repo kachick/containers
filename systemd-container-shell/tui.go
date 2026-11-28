@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"cmp"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"
@@ -260,7 +260,7 @@ func fetchGHCRTags(ctx context.Context, client *http.Client, tokenURL, tagsURL s
 	var tokenData struct {
 		Token string `json:"token"`
 	}
-	if err := json.NewDecoder(tokenResp.Body).Decode(&tokenData); err != nil {
+	if err := json.UnmarshalRead(tokenResp.Body, &tokenData); err != nil {
 		return nil, fmt.Errorf("decoding token response: %w", err)
 	}
 	if tokenData.Token == "" {
@@ -287,7 +287,7 @@ func fetchGHCRTags(ctx context.Context, client *http.Client, tokenURL, tagsURL s
 	var tagsData struct {
 		Tags []string `json:"tags"`
 	}
-	if err := json.NewDecoder(tagsResp.Body).Decode(&tagsData); err != nil {
+	if err := json.UnmarshalRead(tagsResp.Body, &tagsData); err != nil {
 		return nil, fmt.Errorf("decoding tags response: %w", err)
 	}
 	return tagsData.Tags, nil
