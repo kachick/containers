@@ -43,11 +43,21 @@
           };
         in
         {
-          systemd-container-shell = pkgs.rustPlatform.buildRustPackage {
+          systemd-container-shell = pkgs.buildGoModule {
             pname = "systemd-container-shell";
-            version = with builtins; (fromTOML (readFile ./systemd-container-shell/Cargo.toml)).package.version;
+            version = "0.2.0";
             src = ./systemd-container-shell;
-            cargoLock.lockFile = ./systemd-container-shell/Cargo.lock;
+            vendorHash = null;
+
+            env.CGO_ENABLED = 0;
+
+            nativeBuildInputs = [ pkgs.makeWrapper ];
+
+            # Bundle fzf in PATH so `nix run` works without fzf installed on the host.
+            postInstall = ''
+              wrapProgram "$out/bin/systemd-container-shell" \
+                --suffix PATH : "${lib.makeBinPath [ pkgs.fzf ]}"
+            '';
 
             doInstallCheck = true;
             installCheckPhase = ''
@@ -74,9 +84,6 @@
             env = {
               # Fix nixd pkgs versions in the inlay hints
               NIX_PATH = "nixpkgs=${pkgs.path}";
-
-              # Workaround for rust-analyzer error: "ERROR can't load standard library, try installing `rust-src`"
-              RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
             };
 
             buildInputs =
@@ -96,11 +103,9 @@
                 dprint
                 typos
 
-                rustc
-                cargo
-                rust-analyzer
-                rustfmt
-                clippy
+                go
+                gopls
+                fzf
               ])
               ++ [
                 self.packages.${system}.cntr

@@ -2,7 +2,7 @@
   "recommendations": [
     "github.vscode-github-actions",
     "editorconfig.editorconfig",
-    "rust-lang.rust-analyzer",
+    "golang.go",
     "tekumara.typos-vscode",
     "dprint.dprint",
     "jnoortheen.nix-ide",

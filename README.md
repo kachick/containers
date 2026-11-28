@@ -15,6 +15,9 @@
 You can build local images or pull from GHCR and try the shell with the helper tool `systemd-container-shell`.
 
 ```bash
+# Pick an image or tag interactively with fzf
+nix run github:kachick/containers
+
 # Pull latest image and run
 nix run github:kachick/containers#systemd-container-shell -- pull
 

@@ -14,22 +14,38 @@ tasks:
       - task: test
       - task: lint
   test:
+    dir: systemd-container-shell
     cmds:
-      - echo 'Update here'
+      - go test ./...
   fmt:
     cmds:
       - dprint fmt
-      - cargo fmt --manifest-path systemd-container-shell/Cargo.toml
+      - gofmt -w systemd-container-shell
+  lint-go:
+    internal: true
+    dir: systemd-container-shell
+    cmds:
+      - test -z "$(gofmt -l .)"
+      - go vet ./...
   lint:
+    deps:
+      - task: lint-go
     cmds:
       - dprint check
       - typos . .github .vscode
       - zizmor --pedantic .
       - trivy config --exit-code 1 .
-      - cargo clippy --manifest-path systemd-container-shell/Cargo.toml -- -D warnings
-  try:
+  build:
+    internal: true
+    dir: systemd-container-shell
     cmds:
-      - cargo run --manifest-path systemd-container-shell/Cargo.toml -- {{.CLI_ARGS}}
+      - mkdir -p ../tmp
+      - go build -o ../tmp/systemd-container-shell .
+  try:
+    deps:
+      - task: build
+    cmds:
+      - ./tmp/systemd-container-shell {{.CLI_ARGS}}
   'systemd:try':
     cmds:
       - task: try
