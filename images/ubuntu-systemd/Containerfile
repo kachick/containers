@@ -1,6 +1,7 @@
+# Use Google's Docker Hub mirror to avoid anonymous pull limits on Docker Hub and ECR Public in shared CI.
 # You can get these digest by using:
-# podman manifest inspect public.ecr.aws/docker/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
-FROM public.ecr.aws/docker/library/buildpack-deps:26.04-scm@sha256:26f95adbbdd981911e1ad45362d680a32ec5def1acc36b16e5c22102790dcccb
+# podman manifest inspect mirror.gcr.io/library/buildpack-deps:26.04-scm | jq -r '.manifests[0].digest'
+FROM mirror.gcr.io/library/buildpack-deps:26.04-scm@sha256:26f95adbbdd981911e1ad45362d680a32ec5def1acc36b16e5c22102790dcccb
 
 LABEL org.opencontainers.image.source=https://github.com/kachick/containers
 LABEL org.opencontainers.image.description="Ubuntu 26.04 with systemd"
